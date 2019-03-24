@@ -24,8 +24,12 @@ int main(int argc, char *argv[])
     bool success = true;
     prepare();
     warnAboutUnsupportedQtVersion();
-    if (!shouldForce() || ArgumentsAndSettings::force())
-        success = patch();
+
+    if (exitWhenSpacesExist()) {
+        if (!shouldForce() || ArgumentsAndSettings::force())
+            success = patch();
+    } else
+        success = false;
 
     cleanup();
 

@@ -263,6 +263,20 @@ void warnAboutUnsupportedQtVersion()
     }
 }
 
+bool exitWhenSpacesExist()
+{
+    if (ArgumentsAndSettings::oldDir().contains(QRegExp("\\s"))) {
+        QBPLOGE("Old Path of Qt contains space: " + ArgumentsAndSettings::oldDir());
+        return false;
+    }
+    if (ArgumentsAndSettings::newDir().contains(QRegExp("\\s"))) {
+        QBPLOGE("New Path of Qt contains space: " + ArgumentsAndSettings::newDir());
+        return false;
+    }
+
+    return true;
+}
+
 bool patch()
 {
     return step4();

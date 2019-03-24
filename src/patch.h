@@ -20,6 +20,7 @@ public:
 
 void registerPatcherMetaObject(const QMetaObject *metaObject);
 void warnAboutUnsupportedQtVersion();
+bool exitWhenSpacesExist();
 bool shouldForce();
 
 void prepare();
