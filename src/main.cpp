@@ -11,6 +11,7 @@
 int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
+    a.setApplicationVersion(VERSION);
     QDir::setCurrent(a.applicationDirPath());
 
     ArgumentsAndSettings::parse();
