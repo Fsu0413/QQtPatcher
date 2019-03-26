@@ -6,7 +6,7 @@ But this work is hard to fit my need which is to handle cross builds of Qt.
 Since then, I started reinvented the wheel, in order to fit my need.
 
 ## Building
-You'll need a STATIC BUILD OF Qt5 after 5.6 and a recent compiler in order to build QQtPatcher.  
+You'll need a STATIC BUILD OF Qt5 after 5.6 and a recent compiler which supports C++11 in order to build QQtPatcher.  
 Only Qt5Core is needed.  
 Run qmake and make(jom/mingw32-make) and then it should succeed.  
 Dynamic/Shared build of Qt5 is also possible to build but not recommended.
