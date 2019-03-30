@@ -24,7 +24,9 @@ QtConfPatcher::~QtConfPatcher()
 
 QStringList QtConfPatcher::findFileToPatch() const
 {
-    // remove bin/qt.conf if exists.
+    // remove bin/qt.conf if exists in Qt5.
+    if (ArgumentsAndSettings::qtQVersion().majorVersion() != 5)
+        return QStringList();
 
     QDir qtDir(ArgumentsAndSettings::qtDir());
     if (qtDir.exists("bin/qt.conf"))

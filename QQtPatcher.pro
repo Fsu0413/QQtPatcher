@@ -25,7 +25,8 @@ SOURCES += \
         src/patchers/pc.cpp \
         src/patchers/pri.cpp \
         src/patchers/prl.cpp \
-        src/patchers/qtconf.cpp
+        src/patchers/qtconf.cpp \
+        src/patchers/qmakeconf.cpp
 
 HEADERS += \
         src/log.h \

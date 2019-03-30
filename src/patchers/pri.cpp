@@ -28,6 +28,9 @@ PriPatcher::~PriPatcher()
 
 QStringList PriPatcher::findFileToPatch() const
 {
+    if (ArgumentsAndSettings::qtQVersion().majorVersion() != 5)
+        return QStringList();
+
     // Output a warning when a linked OpenSSL is found
     // may need patch manually when OpenSSL build dir moved
     if (QDir(ArgumentsAndSettings::qtDir()).exists("mkspecs/modules/qt_lib_network_private.pri"))

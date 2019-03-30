@@ -26,6 +26,10 @@ LaPatcher::~LaPatcher()
 
 QStringList LaPatcher::findFileToPatch() const
 {
+    // Windows version of Qt4 doesn't support libtool, temporily kill it
+    if (ArgumentsAndSettings::qtQVersion().majorVersion() != 5)
+        return QStringList();
+
     // patch lib/libQt5*.la if libtool is enabled, otherwise patch nothing
     // don't know whether MinGW versions supports libtool, need research.
     // Assuming no support for libtool in MinGW version for now
@@ -48,8 +52,6 @@ QStringList LaPatcher::findFileToPatch() const
 
     return QStringList();
 }
-
-#include <QDebug>
 
 bool LaPatcher::patchFile(const QString &file) const
 {

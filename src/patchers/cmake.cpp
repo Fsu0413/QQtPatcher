@@ -27,6 +27,10 @@ CMakePatcher::~CMakePatcher()
 
 QStringList CMakePatcher::findFileToPatch() const
 {
+    // Qt4 doesn't support CMake
+    if (ArgumentsAndSettings::qtQVersion().majorVersion() != 5)
+        return QStringList();
+
     // patch "lib/cmake/Qt5Gui/Qt5GuiConfigExtras.cmake" in cross versions? or only for android?
     //    _qt5gui_find_extra_libs(EGL "EGL" "" "")
     //    _qt5gui_find_extra_libs(OPENGL "GLESv2" "" "")

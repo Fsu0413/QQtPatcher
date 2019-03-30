@@ -26,6 +26,7 @@ struct AasStorage
     QString crossMkspec;
     QString hostMkspec;
     QString qtVersion;
+    QString buildDir;
 
     // detected from QMake
     QString oldDir;
@@ -112,6 +113,8 @@ bool ArgumentsAndSettings::parse()
                     s.hostMkspec = ob.value("hostMkspec").toString();
                 if (ob.contains("qtVersion"))
                     s.qtVersion = ob.value("qtVersion").toString();
+                if (ob.contains("buildDir"))
+                    s.buildDir = ob.value("buildDir").toString();
             }
         }
     }
@@ -172,6 +175,16 @@ QString ArgumentsAndSettings::hostMkspec()
 QString ArgumentsAndSettings::qtVersion()
 {
     return s.qtVersion;
+}
+
+QVersionNumber ArgumentsAndSettings::qtQVersion()
+{
+    return QVersionNumber::fromString(s.qtVersion);
+}
+
+QString ArgumentsAndSettings::buildDir()
+{
+    return s.buildDir;
 }
 
 QString ArgumentsAndSettings::oldDir()

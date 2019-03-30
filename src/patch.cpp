@@ -230,21 +230,25 @@ bool shouldForce()
 
 void warnAboutUnsupportedQtVersion()
 {
-    QVersionNumber n = QVersionNumber::fromString(ArgumentsAndSettings::qtVersion());
+    QVersionNumber n = ArgumentsAndSettings::qtQVersion();
     if (n.majorVersion() != 5) {
-        if (n.majorVersion() != 4) {
+        if (n.majorVersion() < 4) {
             QBPLOGW(QString("You are going to patch Qt%1, which is not and won't be supported. Patching may silently fail.\n"
+                            "Our program is supposed to be compatible with at least host builds/cross builds for Android of Qt5 after 5.6 and host builds of Qt4.8")
+                        .arg(ArgumentsAndSettings::qtVersion()));
+        } else if (n.majorVersion() >= 6) {
+            QBPLOGW(QString("You are going to patch Qt%1, which is TODO by now. Patching may silently fail.\n"
                             "Our program is supposed to be compatible with at least host builds/cross builds for Android of Qt5 after 5.6 and host builds of Qt4.8")
                         .arg(ArgumentsAndSettings::qtVersion()));
         } else if (n.minorVersion() != 8) {
             QBPLOGW(QString("You are going to patch Qt%1, which is not and won't be supported. Patching may silently fail.\n"
                             "Our program is supposed to be compatible with at least host builds/cross builds for Android of Qt5 after 5.6 and host builds of Qt4.8")
                         .arg(ArgumentsAndSettings::qtVersion()));
-        } else if (ArgumentsAndSettings::crossMkspec() == ArgumentsAndSettings::hostMkspec()) {
+        } else if (ArgumentsAndSettings::crossMkspec() != ArgumentsAndSettings::hostMkspec()) {
             QBPLOGW(QString("You are going to patch Qt%1 cross builds, which is not and won't be supported. Patching may silently fail.\n"
                             "Our program is supposed to be compatible with at least host builds/cross builds for Android of Qt5 after 5.6 and host builds of Qt4.8")
                         .arg(ArgumentsAndSettings::qtVersion()));
-        } else {
+        } else if (!ArgumentsAndSettings::crossMkspec().startsWith("win32-")) {
             QBPLOGW(QString("You are going to patch Qt%1, which is TODO by now. Patching may silently fail.\n"
                             "Our program is supposed to be compatible with at least host builds/cross builds for Android of Qt5 after 5.6 and host builds of Qt4.8")
                         .arg(ArgumentsAndSettings::qtVersion()));

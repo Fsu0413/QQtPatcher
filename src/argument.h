@@ -2,6 +2,7 @@
 #define QQBPARGUMENT_H
 
 #include <QString>
+#include <QVersionNumber>
 
 namespace ArgumentsAndSettings {
 
@@ -21,6 +22,8 @@ QStringList unknownParameters();
 QString crossMkspec();
 QString hostMkspec();
 QString qtVersion();
+QVersionNumber qtQVersion();
+QString buildDir();
 
 // detected from QMake
 QString oldDir();
