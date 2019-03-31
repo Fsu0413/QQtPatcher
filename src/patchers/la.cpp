@@ -26,13 +26,7 @@ LaPatcher::~LaPatcher()
 
 QStringList LaPatcher::findFileToPatch() const
 {
-    // Windows version of Qt4 doesn't support libtool, temporily kill it
-    if (ArgumentsAndSettings::qtQVersion().majorVersion() != 5)
-        return QStringList();
-
-    // patch lib/libQt5*.la if libtool is enabled, otherwise patch nothing
-    // don't know whether MinGW versions supports libtool, need research.
-    // Assuming no support for libtool in MinGW version for now
+    // MinGW don't support libtool
 
     if (!ArgumentsAndSettings::crossMkspec().startsWith("win")) {
         QDir libDir(ArgumentsAndSettings::qtDir());
@@ -40,10 +34,16 @@ QStringList LaPatcher::findFileToPatch() const
             return QStringList();
 
         libDir.setFilter(QDir::Files | QDir::NoSymLinks | QDir::NoDotAndDotDot | QDir::Readable);
-        libDir.setNameFilters({"libQt5*.la", "libEnginio.la"});
+        if (ArgumentsAndSettings::qtQVersion().majorVersion() == 5)
+            libDir.setNameFilters({"libQt5*.la", "libEnginio.la"});
+        else
+            libDir.setNameFilters({"libQt*.la", "libphonon.la"});
         QStringList r;
         QStringList l = libDir.entryList();
         foreach (const QString &f, l) {
+            if ((ArgumentsAndSettings::qtQVersion().majorVersion() == 4) && f.startsWith("libQt5"))
+                continue;
+
             if (shouldPatch(f))
                 r << (QStringLiteral("lib/") + f);
         }

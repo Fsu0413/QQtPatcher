@@ -85,7 +85,11 @@ QStringList BinaryPatcher::findFileToPatch4() const
         } else if (ArgumentsAndSettings::hostMkspec().startsWith("macx")) {
             QBPLOGW("Todo....");
         } else {
-            QBPLOGW("Todo....");
+            if (qtDir.exists("lib/libQtCore.so.4")) {
+                exist = true;
+                r << "lib/libQtCore.so.4";
+            } else
+                n << "lib/libQtCore.so.4";
         }
 
         // Qt4 doesn't support static builds
