@@ -82,7 +82,7 @@ bool LaPatcher::patchFile(const QString &file) const
                         if (QDir(n.mid(2).replace("\\\\", "\\")) == oldLibDir)
                             n = QStringLiteral("-L") + QDir::fromNativeSeparators(newLibDir.absolutePath());
                     } else if (!n.startsWith("-l")) {
-                        QFileInfo fi(n.replace("\\\\", "\\"));
+                        QFileInfo fi(QString(n).replace("\\\\", "\\"));
                         if (QDir(fi.absolutePath()) == oldLibDir) {
                             QFileInfo fiNew(newLibDir, fi.baseName());
                             n = QDir::fromNativeSeparators(fiNew.absoluteFilePath());
@@ -102,7 +102,7 @@ bool LaPatcher::patchFile(const QString &file) const
                     str = str.mid(1);
                 }
 
-                if (QDir(str.replace("\\\\", "\\")) == oldLibDir) {
+                if (QDir(QString(str).replace("\\\\", "\\")) == oldLibDir) {
                     str = QStringLiteral("libdir=\'") + equalMark + QDir::toNativeSeparators(newLibDir.absolutePath()).replace("\\", "\\\\") + QStringLiteral("\'\n");
                     strcpy(arr, str.toUtf8().constData());
                 }
@@ -153,7 +153,7 @@ bool LaPatcher::shouldPatch(const QString &file) const
                             return true;
                         }
                     } else if (!n.startsWith("-l")) {
-                        if (QDir(QFileInfo(n.replace("\\\\", "\\")).absolutePath()) == oldLibDir) {
+                        if (QDir(QFileInfo(QString(n).replace("\\\\", "\\")).absolutePath()) == oldLibDir) {
                             f.close();
                             return true;
                         }
@@ -165,7 +165,7 @@ bool LaPatcher::shouldPatch(const QString &file) const
                 if (str.startsWith("="))
                     str = str.mid(1);
 
-                if (QDir(str.replace("\\\\", "\\")) == oldLibDir) {
+                if (QDir(QString(str).replace("\\\\", "\\")) == oldLibDir) {
                     f.close();
                     return true;
                 }

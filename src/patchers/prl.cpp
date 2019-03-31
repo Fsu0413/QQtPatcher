@@ -78,7 +78,7 @@ QString PrlPatcher::patchQmakePrlLibs(const QDir &oldLibDir, const QDir &newLibD
                 }
             }
         } else if (!n.startsWith("-l")) {
-            QFileInfo fi(n.replace("\\\\", "\\"));
+            QFileInfo fi(QString(n).replace("\\\\", "\\"));
 
             if (fi.isAbsolute() && QDir(fi.absolutePath()) == oldLibDir) {
                 QFileInfo fiNew(newLibDir, fi.fileName());
@@ -196,7 +196,7 @@ bool PrlPatcher::shouldPatch(const QString &file) const
                                 return true;
                             }
                         } else if (!n.startsWith("-l")) {
-                            if (QDir(QFileInfo(n.replace("\\\\", "\\")).absolutePath()) == oldLibDir) {
+                            if (QDir(QFileInfo(QString(n).replace("\\\\", "\\")).absolutePath()) == oldLibDir) {
                                 f.close();
                                 return true;
                             }
@@ -212,7 +212,7 @@ bool PrlPatcher::shouldPatch(const QString &file) const
                                     return true;
                                 }
                             } else if (!n.startsWith("-l")) {
-                                if (QDir(QFileInfo(n.replace("\\\\", "\\")).absolutePath()) == buildLibDir) {
+                                if (QDir(QFileInfo(QString(n).replace("\\\\", "\\")).absolutePath()) == buildLibDir) {
                                     f.close();
                                     return true;
                                 }

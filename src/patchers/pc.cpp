@@ -169,7 +169,7 @@ bool PcPatcher::shouldPatch(const QString &file) const
             str = str.trimmed();
             if (str.startsWith("prefix=")) {
                 str = str.mid(7).trimmed();
-                if (QDir(str.replace("\\\\", "\\")) == oldDir) {
+                if (QDir(QString(str).replace("\\\\", "\\")) == oldDir) {
                     f.close();
                     return true;
                 }
