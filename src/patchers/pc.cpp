@@ -162,6 +162,22 @@ void PcPatcher::patchQt4MinGW(const QString &_str, char *arr, const QDir &newDir
     } else if (str.startsWith("lrelease_location=")) {
         str = QStringLiteral("lrelease_location=") + QDir::fromNativeSeparators(newDir.absolutePath() + "/bin/lrelease") + "\n";
         strcpy(arr, str.toUtf8().constData());
+    } else if (str.startsWith("Cflags:")) {
+        str = str.mid(7);
+        QStringList l = str.split(" ", QString::SkipEmptyParts);
+        QStringList r;
+        foreach (const QString &m, l) {
+            QString n = m;
+            if (n.startsWith("-I")) {
+                QDir newIncludeDir(ArgumentsAndSettings::newDir() + "/include");
+                QDir oldIncludeDir(ArgumentsAndSettings::oldDir() + "/include");
+                if (QDir(n.mid(2)).isAbsolute() && QDir(n.mid(2)).absolutePath() == oldIncludeDir.absolutePath())
+                    n = QStringLiteral("-I") + QDir::fromNativeSeparators(newIncludeDir.absolutePath());
+            }
+            r << n;
+        }
+        str = QStringLiteral("Cflags: ") + r.join(' ') + " \n";
+        strcpy(arr, str.toUtf8().constData());
     }
 }
 
@@ -197,7 +213,7 @@ void PcPatcher::patchQt4Unix(const QString &_str, char *arr, const QDir &newDir,
                     n = QStringLiteral("-L") + QDir::fromNativeSeparators(newLibDir.absolutePath());
             } else if (!n.startsWith("-l")) {
                 QFileInfo fi(QString(n).replace("\\\\", "\\"));
-                if (QDir(fi.absolutePath()) == oldLibDir) {
+                if (fi.isAbsolute() && QDir(fi.absolutePath()) == oldLibDir) {
                     QFileInfo fiNew(newLibDir, fi.baseName());
                     n = QDir::fromNativeSeparators(fiNew.absoluteFilePath());
                 }
@@ -215,7 +231,7 @@ void PcPatcher::patchQt4Unix(const QString &_str, char *arr, const QDir &newDir,
             if (n.startsWith("-I")) {
                 QDir newIncludeDir(ArgumentsAndSettings::newDir() + "/include");
                 QDir oldIncludeDir(ArgumentsAndSettings::oldDir() + "/include");
-                if (QDir(n.mid(2)).absolutePath() == oldIncludeDir.absolutePath())
+                if (QDir(n.mid(2)).isAbsolute() && QDir(n.mid(2)).absolutePath() == oldIncludeDir.absolutePath())
                     n = QStringLiteral("-I") + QDir::fromNativeSeparators(newIncludeDir.absolutePath());
             }
             r << n;
