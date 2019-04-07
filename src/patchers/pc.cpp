@@ -15,9 +15,9 @@ public:
 
     bool shouldPatch(const QString &file) const;
 
-    void patchQt5(const QString &str, char *arr, const QDir &newDir);
-    void patchQt4MinGW(const QString &str, char *arr, const QDir &newDir, const QString &fBaseName);
-    void patchQt4Unix(const QString &str, char *arr, const QDir &newDir, const QString &fBaseName);
+    void patchQt5(const QString &str, char *arr, const QDir &newDir) const;
+    void patchQt4MinGW(const QString &str, char *arr, const QDir &newDir, const QString &fBaseName) const;
+    void patchQt4Unix(const QString &str, char *arr, const QDir &newDir, const QString &fBaseName) const;
 };
 
 PcPatcher::PcPatcher()
@@ -72,7 +72,7 @@ bool PcPatcher::patchFile(const QString &file) const
             QString str = QString::fromUtf8(arr);
             str = str.trimmed();
             if (ArgumentsAndSettings::qtQVersion().majorVersion() == 5) {
-                patchQt5(arr, str, newDir);
+                patchQt5(str, arr, newDir);
             } else if (ArgumentsAndSettings::qtQVersion().majorVersion() == 4) {
                 // Why MinGW versions and Linux versions are different........
                 if (ArgumentsAndSettings::crossMkspec().startsWith("win32-"))
@@ -123,7 +123,7 @@ bool PcPatcher::shouldPatch(const QString &file) const
     return false;
 }
 
-void PcPatcher::patchQt5(const QString &_str, char *arr, const QDir &newDir)
+void PcPatcher::patchQt5(const QString &_str, char *arr, const QDir &newDir) const
 {
     QString str = _str;
     if (str.startsWith("prefix=")) {
@@ -135,7 +135,7 @@ void PcPatcher::patchQt5(const QString &_str, char *arr, const QDir &newDir)
         strcpy(arr, "includedir=${prefix}/include\n");
 }
 
-void PcPatcher::patchQt4MinGW(const QString &_str, char *arr, const QDir &newDir, const QString &fBaseName)
+void PcPatcher::patchQt4MinGW(const QString &_str, char *arr, const QDir &newDir, const QString &fBaseName) const
 {
     QString str = _str;
     if (str.startsWith("prefix=")) {
@@ -181,7 +181,7 @@ void PcPatcher::patchQt4MinGW(const QString &_str, char *arr, const QDir &newDir
     }
 }
 
-void PcPatcher::patchQt4Unix(const QString &_str, char *arr, const QDir &newDir, const QString &fBaseName)
+void PcPatcher::patchQt4Unix(const QString &_str, char *arr, const QDir &newDir, const QString &fBaseName) const
 {
     QString str = _str;
     if (str.startsWith("prefix=")) {
@@ -208,6 +208,8 @@ void PcPatcher::patchQt4Unix(const QString &_str, char *arr, const QDir &newDir,
         QStringList r;
         foreach (const QString &m, l) {
             QString n = m;
+            QDir newLibDir(ArgumentsAndSettings::newDir() + "/lib");
+            QDir oldLibDir(ArgumentsAndSettings::oldDir() + "/lib");
             if (n.startsWith("-L")) {
                 if (QDir(n.mid(2).replace("\\\\", "\\")) == oldLibDir)
                     n = QStringLiteral("-L") + QDir::fromNativeSeparators(newLibDir.absolutePath());
