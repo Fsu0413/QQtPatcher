@@ -53,68 +53,69 @@ bool ArgumentsAndSettings::parse()
 
     QCommandLineParser parser;
     parser.setSingleDashWordOptionMode(QCommandLineParser::ParseAsLongOptions);
-    parser.setApplicationDescription("Tool for patching paths in Qt binaries.\n"
-                                     "This is a reworked version, using a static compiled Qt " QT_VERSION_STR ".\n"
-                                     "Frank Su, 2019. http://mogara.org\n\n"
-                                     "Thanks for Yuri V. Krugloff at http://www.tver-soft.org.");
+    parser.setApplicationDescription(QStringLiteral("Tool for patching paths in Qt binaries.\n"
+                                                    "This is a reworked version, using a static compiled Qt " QT_VERSION_STR ".\n"
+                                                    "Frank Su, 2019. http://mogara.org\n\n"
+                                                    "Thanks for Yuri V. Krugloff at http://www.tver-soft.org."));
 
     parser.addVersionOption();
     parser.addHelpOption();
-    parser.addOption(QCommandLineOption({"V", "verbose"}, "Print extended runtime information."));
-    parser.addOption(QCommandLineOption({"b", "backup"},
-                                        "If specified, the backup files during patching will be saved to the specified "
-                                        "path. If not, the backup files during patching will be deleted if succeeded.\n"
-                                        "Note: the backup files will be restored if an error occurs.",
-                                        "path"));
-    parser.addOption(QCommandLineOption({"l", "logfile"}, "Duplicate messages into logfile with name \"name\".", "name"));
-    parser.addOption(QCommandLineOption({"f", "force"}, "Force patching (without old path actuality checking)."));
-    parser.addOption(QCommandLineOption({"q", "qt-dir"},
-                                        "Directory, where Qt or qmake is now located (may be relative).\n"
-                                        "If not specified, will be used current directory. Patcher will "
-                                        "search qmake first in directory \"path\", and then in its subdir "
-                                        "\"bin\". Patcher is NEVER looking qmake in other directories.\n"
-                                        "WARNING: If nonstandard directory for binary files is used "
-                                        "(not \"bin\"), select directory where located qmake.",
-                                        "path"));
-    parser.addOption(QCommandLineOption({"n", "new-dir"},
-                                        "Directory where Qt will be located (may be relative).\n"
-                                        "If not specified, will be used the current location.",
-                                        "path"));
-    parser.addOption(QCommandLineOption({"d", "dry-run"}, "Output the procedure only, do not really process the jobs."));
+    parser.addOption(QCommandLineOption({QStringLiteral("V"), QStringLiteral("verbose")}, QStringLiteral("Print extended runtime information.")));
+    parser.addOption(QCommandLineOption({QStringLiteral("b"), QStringLiteral("backup")},
+                                        QStringLiteral("If specified, the backup files during patching will be saved to the specified "
+                                                       "path. If not, the backup files during patching will be deleted if succeeded.\n"
+                                                       "Note: the backup files will be restored if an error occurs."),
+                                        QStringLiteral("path")));
+    parser.addOption(
+        QCommandLineOption({QStringLiteral("l"), QStringLiteral("logfile")}, QStringLiteral("Duplicate messages into logfile with name \"name\"."), QStringLiteral("name")));
+    parser.addOption(QCommandLineOption({QStringLiteral("f"), QStringLiteral("force")}, QStringLiteral("Force patching (without old path actuality checking).")));
+    parser.addOption(QCommandLineOption({QStringLiteral("q"), QStringLiteral("qt-dir")},
+                                        QStringLiteral("Directory, where Qt or qmake is now located (may be relative).\n"
+                                                       "If not specified, will be used current directory. Patcher will "
+                                                       "search qmake first in directory \"path\", and then in its subdir "
+                                                       "\"bin\". Patcher is NEVER looking qmake in other directories.\n"
+                                                       "WARNING: If nonstandard directory for binary files is used "
+                                                       "(not \"bin\"), select directory where located qmake."),
+                                        QStringLiteral("path")));
+    parser.addOption(QCommandLineOption({QStringLiteral("n"), QStringLiteral("new-dir")},
+                                        QStringLiteral("Directory where Qt will be located (may be relative).\n"
+                                                       "If not specified, will be used the current location."),
+                                        QStringLiteral("path")));
+    parser.addOption(QCommandLineOption({QStringLiteral("d"), QStringLiteral("dry-run")}, QStringLiteral("Output the procedure only, do not really process the jobs.")));
 
     parser.process(*qApp);
-    if (parser.isSet("V"))
+    if (parser.isSet(QStringLiteral("V")))
         s.verbose = true;
-    if (parser.isSet("b"))
-        s.backupDir = parser.value("b");
-    if (parser.isSet("l"))
-        s.logfile = parser.value("l");
-    if (parser.isSet("f"))
+    if (parser.isSet(QStringLiteral("b")))
+        s.backupDir = parser.value(QStringLiteral("b"));
+    if (parser.isSet(QStringLiteral("l")))
+        s.logfile = parser.value(QStringLiteral("l"));
+    if (parser.isSet(QStringLiteral("f")))
         s.force = true;
-    if (parser.isSet("q"))
-        s.qtDir = parser.value("q");
-    if (parser.isSet("n"))
-        s.newDir = parser.value("n");
-    if (parser.isSet("d"))
+    if (parser.isSet(QStringLiteral("q")))
+        s.qtDir = parser.value(QStringLiteral("q"));
+    if (parser.isSet(QStringLiteral("n")))
+        s.newDir = parser.value(QStringLiteral("n"));
+    if (parser.isSet(QStringLiteral("d")))
         s.dryRun = true;
 
     s.unknownParameters = parser.unknownOptionNames() + parser.positionalArguments();
 
-    QFile configFile("qbp.json");
+    QFile configFile(QStringLiteral("qbp.json"));
     if (configFile.exists() && configFile.open(QFile::ReadOnly | QFile::Text)) {
         QJsonParseError err;
         QJsonDocument doc = QJsonDocument::fromJson(configFile.readAll(), &err);
         if (err.error == QJsonParseError::NoError) {
             if (doc.isObject()) {
                 QJsonObject ob = doc.object();
-                if (ob.contains("crossMkspec"))
-                    s.crossMkspec = ob.value("crossMkspec").toString();
-                if (ob.contains("hostMkspec"))
-                    s.hostMkspec = ob.value("hostMkspec").toString();
-                if (ob.contains("qtVersion"))
-                    s.qtVersion = ob.value("qtVersion").toString();
-                if (ob.contains("buildDir"))
-                    s.buildDir = ob.value("buildDir").toString();
+                if (ob.contains(QStringLiteral("crossMkspec")))
+                    s.crossMkspec = ob.value(QStringLiteral("crossMkspec")).toString();
+                if (ob.contains(QStringLiteral("hostMkspec")))
+                    s.hostMkspec = ob.value(QStringLiteral("hostMkspec")).toString();
+                if (ob.contains(QStringLiteral("qtVersion")))
+                    s.qtVersion = ob.value(QStringLiteral("qtVersion")).toString();
+                if (ob.contains(QStringLiteral("buildDir")))
+                    s.buildDir = ob.value(QStringLiteral("buildDir")).toString();
             }
         }
     }
@@ -194,36 +195,36 @@ QString ArgumentsAndSettings::oldDir()
 
 void ArgumentsAndSettings::setQtDir(const QString &dir)
 {
-    QBPLOGV("qtDir is set to " + dir);
+    QBPLOGV(QStringLiteral("qtDir is set to ") + dir);
     s.qtDir = dir;
 }
 
 void ArgumentsAndSettings::setNewDir(const QString &dir)
 {
-    QBPLOGV("newDir is set to " + dir);
+    QBPLOGV(QStringLiteral("newDir is set to ") + dir);
     s.newDir = dir;
 }
 
 void ArgumentsAndSettings::setCrossMkspec(const QString &mkspec)
 {
-    QBPLOGV("crossMkspec is set to " + mkspec);
+    QBPLOGV(QStringLiteral("crossMkspec is set to ") + mkspec);
     s.crossMkspec = mkspec;
 }
 
 void ArgumentsAndSettings::setHostMkspec(const QString &mkspec)
 {
-    QBPLOGV("hostMkspec is set to " + mkspec);
+    QBPLOGV(QStringLiteral("hostMkspec is set to ") + mkspec);
     s.hostMkspec = mkspec;
 }
 
 void ArgumentsAndSettings::setQtVersion(const QString &version)
 {
-    QBPLOGV("qtVersion is set to " + version);
+    QBPLOGV(QStringLiteral("qtVersion is set to ") + version);
     s.qtVersion = version;
 }
 
 void ArgumentsAndSettings::setOldDir(const QString &dir)
 {
-    QBPLOGV("oldDir is set to " + dir);
+    QBPLOGV(QStringLiteral("oldDir is set to ") + dir);
     s.oldDir = dir;
 }

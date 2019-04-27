@@ -11,7 +11,7 @@
 int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
-    a.setApplicationVersion(VERSION);
+    a.setApplicationVersion(QStringLiteral(VERSION));
     QDir::setCurrent(a.applicationDirPath());
 
     ArgumentsAndSettings::parse();
@@ -20,7 +20,7 @@ int main(int argc, char *argv[])
     QbpLog::instance().setLogFile(ArgumentsAndSettings::logFile());
 
     if (!ArgumentsAndSettings::unknownParameters().isEmpty())
-        QBPLOGW(QString("Unknown Parameters: %1").arg(ArgumentsAndSettings::unknownParameters().join(", ")));
+        QBPLOGW(QString(QStringLiteral("Unknown Parameters: %1")).arg(ArgumentsAndSettings::unknownParameters().join(QStringLiteral(", "))));
 
     bool success = true;
     prepare();

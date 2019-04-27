@@ -28,20 +28,20 @@ QStringList LaPatcher::findFileToPatch() const
 {
     // MinGW don't support libtool
 
-    if (!ArgumentsAndSettings::crossMkspec().startsWith("win")) {
+    if (!ArgumentsAndSettings::crossMkspec().startsWith(QStringLiteral("win"))) {
         QDir libDir(ArgumentsAndSettings::qtDir());
-        if (!libDir.cd("lib"))
+        if (!libDir.cd(QStringLiteral("lib")))
             return QStringList();
 
         libDir.setFilter(QDir::Files | QDir::NoSymLinks | QDir::NoDotAndDotDot | QDir::Readable);
         if (ArgumentsAndSettings::qtQVersion().majorVersion() == 5)
-            libDir.setNameFilters({"libQt5*.la", "libEnginio.la"});
+            libDir.setNameFilters({QStringLiteral("libQt5*.la"), QStringLiteral("libEnginio.la")});
         else
-            libDir.setNameFilters({"libQt*.la", "libphonon.la"});
+            libDir.setNameFilters({QStringLiteral("libQt*.la"), QStringLiteral("libphonon.la")});
         QStringList r;
         QStringList l = libDir.entryList();
         foreach (const QString &f, l) {
-            if ((ArgumentsAndSettings::qtQVersion().majorVersion() == 4) && f.startsWith("libQt5"))
+            if ((ArgumentsAndSettings::qtQVersion().majorVersion() == 4) && f.startsWith(QStringLiteral("libQt5")))
                 continue;
 
             if (shouldPatch(f))
@@ -68,21 +68,21 @@ bool LaPatcher::patchFile(const QString &file) const
         while (f.readLine(arr, 9999) > 0) {
             QString str = QString::fromUtf8(arr);
             str = str.trimmed();
-            if (str.startsWith("dependency_libs=")) {
+            if (str.startsWith(QStringLiteral("dependency_libs="))) {
                 str = str.mid(17);
                 str.chop(1);
-                QStringList l = str.split(" ", QString::SkipEmptyParts);
+                QStringList l = str.split(QStringLiteral(" "), QString::SkipEmptyParts);
                 QStringList r;
                 foreach (const QString &m, l) {
                     QString n = m;
-                    if (n.startsWith("-L=")) {
-                        if (QDir(n.mid(3).replace("\\\\", "\\")) == oldLibDir)
+                    if (n.startsWith(QStringLiteral("-L="))) {
+                        if (QDir(n.mid(3).replace(QStringLiteral("\\\\"), QStringLiteral("\\"))) == oldLibDir)
                             n = QStringLiteral("-L=") + QDir::fromNativeSeparators(newLibDir.absolutePath());
-                    } else if (n.startsWith("-L")) {
-                        if (QDir(n.mid(2).replace("\\\\", "\\")) == oldLibDir)
+                    } else if (n.startsWith(QStringLiteral("-L"))) {
+                        if (QDir(n.mid(2).replace(QStringLiteral("\\\\"), QStringLiteral("\\"))) == oldLibDir)
                             n = QStringLiteral("-L") + QDir::fromNativeSeparators(newLibDir.absolutePath());
-                    } else if (!n.startsWith("-l")) {
-                        QFileInfo fi(QString(n).replace("\\\\", "\\"));
+                    } else if (!n.startsWith(QStringLiteral("-l"))) {
+                        QFileInfo fi(QString(n).replace(QStringLiteral("\\\\"), QStringLiteral("\\")));
                         if (QDir(fi.absolutePath()) == oldLibDir) {
                             QFileInfo fiNew(newLibDir, fi.baseName());
                             n = QDir::fromNativeSeparators(fiNew.absoluteFilePath());
@@ -90,20 +90,21 @@ bool LaPatcher::patchFile(const QString &file) const
                     }
                     r << n;
                 }
-                str = QStringLiteral("dependency_libs=\'") + r.join(' ') + "\'\n";
+                str = QStringLiteral("dependency_libs=\'") + r.join(QLatin1Char(' ')) + QStringLiteral("\'\n");
                 strcpy(arr, str.toUtf8().constData());
-            } else if (str.startsWith("libdir=")) {
+            } else if (str.startsWith(QStringLiteral("libdir="))) {
                 str = str.mid(8);
                 str.chop(1);
 
                 QString equalMark;
-                if (str.startsWith("=")) {
+                if (str.startsWith(QStringLiteral("="))) {
                     equalMark = QStringLiteral("=");
                     str = str.mid(1);
                 }
 
-                if (QDir(QString(str).replace("\\\\", "\\")) == oldLibDir) {
-                    str = QStringLiteral("libdir=\'") + equalMark + QDir::toNativeSeparators(newLibDir.absolutePath()).replace("\\", "\\\\") + QStringLiteral("\'\n");
+                if (QDir(QString(str).replace(QStringLiteral("\\\\"), QStringLiteral("\\"))) == oldLibDir) {
+                    str = QStringLiteral("libdir=\'") + equalMark + QDir::toNativeSeparators(newLibDir.absolutePath()).replace(QStringLiteral("\\"), QStringLiteral("\\\\"))
+                        + QStringLiteral("\'\n");
                     strcpy(arr, str.toUtf8().constData());
                 }
             }
@@ -123,7 +124,7 @@ bool LaPatcher::patchFile(const QString &file) const
 bool LaPatcher::shouldPatch(const QString &file) const
 {
     QDir libDir(ArgumentsAndSettings::qtDir());
-    if (!libDir.cd("lib"))
+    if (!libDir.cd(QStringLiteral("lib")))
         return false;
 
     QDir oldLibDir(ArgumentsAndSettings::oldDir() + QStringLiteral("/lib"));
@@ -136,36 +137,36 @@ bool LaPatcher::shouldPatch(const QString &file) const
         while (f.readLine(arr, 9999) > 0) {
             QString str = QString::fromUtf8(arr);
             str = str.trimmed();
-            if (str.startsWith("dependency_libs=")) {
+            if (str.startsWith(QStringLiteral("dependency_libs="))) {
                 str = str.mid(17);
                 str.chop(1);
-                QStringList l = str.split(" ", QString::SkipEmptyParts);
+                QStringList l = str.split(QStringLiteral(" "), QString::SkipEmptyParts);
                 foreach (const QString &m, l) {
                     QString n = m;
-                    if (n.startsWith("-L=")) {
-                        if (QDir(n.mid(3).replace("\\\\", "\\")) == oldLibDir) {
+                    if (n.startsWith(QStringLiteral("-L="))) {
+                        if (QDir(n.mid(3).replace(QStringLiteral("\\\\"), QStringLiteral("\\"))) == oldLibDir) {
                             f.close();
                             return true;
                         }
-                    } else if (n.startsWith("-L")) {
-                        if (QDir(n.mid(2).replace("\\\\", "\\")) == oldLibDir) {
+                    } else if (n.startsWith(QStringLiteral("-L"))) {
+                        if (QDir(n.mid(2).replace(QStringLiteral("\\\\"), QStringLiteral("\\"))) == oldLibDir) {
                             f.close();
                             return true;
                         }
-                    } else if (!n.startsWith("-l")) {
-                        if (QDir(QFileInfo(QString(n).replace("\\\\", "\\")).absolutePath()) == oldLibDir) {
+                    } else if (!n.startsWith(QStringLiteral("-l"))) {
+                        if (QDir(QFileInfo(QString(n).replace(QStringLiteral("\\\\"), QStringLiteral("\\"))).absolutePath()) == oldLibDir) {
                             f.close();
                             return true;
                         }
                     }
                 }
-            } else if (str.startsWith("libdir=")) {
+            } else if (str.startsWith(QStringLiteral("libdir="))) {
                 str = str.mid(8);
                 str.chop(1);
-                if (str.startsWith("="))
+                if (str.startsWith(QStringLiteral("=")))
                     str = str.mid(1);
 
-                if (QDir(QString(str).replace("\\\\", "\\")) == oldLibDir) {
+                if (QDir(QString(str).replace(QStringLiteral("\\\\"), QStringLiteral("\\"))) == oldLibDir) {
                     f.close();
                     return true;
                 }

@@ -29,8 +29,8 @@ QStringList QtConfPatcher::findFileToPatch() const
         return QStringList();
 
     QDir qtDir(ArgumentsAndSettings::qtDir());
-    if (qtDir.exists("bin/qt.conf"))
-        return {"bin/qt.conf"};
+    if (qtDir.exists(QStringLiteral("bin/qt.conf")))
+        return {QStringLiteral("bin/qt.conf")};
 
     return QStringList();
 }

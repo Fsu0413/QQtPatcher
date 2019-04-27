@@ -38,16 +38,16 @@ QString step1()
     if (!ArgumentsAndSettings::qtDir().isEmpty()) {
         qtDir = QDir(ArgumentsAndSettings::qtDir());
         if (!qtDir.exists())
-            QBPLOGF(QString("Cannot find %1.").arg(ArgumentsAndSettings::qtDir()));
+            QBPLOGF(QString(QStringLiteral("Cannot find %1.")).arg(ArgumentsAndSettings::qtDir()));
     }
     qtDir.makeAbsolute();
 
     // find QMake in QtDir
-    static const QStringList binQmakePaths {"bin/qmake", "bin/qmake.exe"};
-    static const QStringList qmakePaths {"qmake", "qmake.exe"};
+    static const QStringList binQmakePaths {QStringLiteral("bin/qmake"), QStringLiteral("bin/qmake.exe")};
+    static const QStringList qmakePaths {QStringLiteral("qmake"), QStringLiteral("qmake.exe")};
 
     bool qtDirFlag = false;
-    QString qmakeProgram = "qmake";
+    QString qmakeProgram = QStringLiteral("qmake");
     foreach (const QString &p, binQmakePaths) {
         if (qtDir.exists(p)) {
             qmakeProgram = p;
@@ -55,10 +55,10 @@ QString step1()
         }
     }
 
-    if (!qtDirFlag && qtDir.dirName() == "bin") {
+    if (!qtDirFlag && qtDir.dirName() == QStringLiteral("bin")) {
         foreach (const QString &p, qmakePaths) {
             if (qtDir.exists(p)) {
-                qmakeProgram = "bin/" + p;
+                qmakeProgram = QStringLiteral("bin/") + p;
                 if (qtDir.cdUp())
                     qtDirFlag = true;
             }
@@ -66,21 +66,21 @@ QString step1()
     }
 
     if (!qtDirFlag)
-        QBPLOGF(QString("Cannot find qmake in %1.").arg(qtDir.absolutePath()));
+        QBPLOGF(QString(QStringLiteral("Cannot find qmake in %1.")).arg(qtDir.absolutePath()));
 
     ArgumentsAndSettings::setQtDir(qtDir.absolutePath());
     ArgumentsAndSettings::setNewDir(newDir.absolutePath());
 
-    QBPLOGV(QString("Step1:"
-                    "Found qmake Program: %1,"
-                    "Found QtDir: %2,"
-                    "New Dir: %3")
+    QBPLOGV(QString(QStringLiteral("Step1:"
+                                   "Found qmake Program: %1,"
+                                   "Found QtDir: %2,"
+                                   "New Dir: %3"))
                 .arg(qmakeProgram)
                 .arg(ArgumentsAndSettings::qtDir())
                 .arg(ArgumentsAndSettings::newDir()));
 
-    if (ArgumentsAndSettings::newDir().contains(QRegExp("\\s")))
-        QBPLOGF(QString("NewDir with spaces ae not supported. (%1)").arg(ArgumentsAndSettings::newDir()));
+    if (ArgumentsAndSettings::newDir().contains(QRegExp(QStringLiteral("\\s"))))
+        QBPLOGF(QString(QStringLiteral("NewDir with spaces ae not supported. (%1)")).arg(ArgumentsAndSettings::newDir()));
 
     return qmakeProgram;
 }
@@ -91,76 +91,77 @@ void step2(const QString &qmakeProgram)
     QDir qtDir(ArgumentsAndSettings::qtDir());
 
     // temporily rename qt.conf for ease processing
-    bool qtConfExists = qtDir.exists("bin/qt.conf");
+    bool qtConfExists = qtDir.exists(QStringLiteral("bin/qt.conf"));
     if (qtConfExists) {
-        qtDir.remove("bin/QQBP_qt.conf_QQBP");
-        qtDir.rename("bin/qt.conf", "bin/QQBP_qt.conf_QQBP");
+        qtDir.remove(QStringLiteral("bin/QQBP_qt.conf_QQBP"));
+        qtDir.rename(QStringLiteral("bin/qt.conf"), QStringLiteral("bin/QQBP_qt.conf_QQBP"));
     }
 
     QProcess process;
     process.setProgram(qtDir.absoluteFilePath(qmakeProgram));
-    process.setWorkingDirectory(qtDir.absoluteFilePath("bin"));
-    process.setArguments({"-query"});
+    process.setWorkingDirectory(qtDir.absoluteFilePath(QStringLiteral("bin")));
+    process.setArguments({QStringLiteral("-query")});
     process.setReadChannelMode(QProcess::ForwardedErrorChannel);
     process.setReadChannel(QProcess::StandardOutput);
     process.start(QIODevice::ReadOnly | QIODevice::Text);
     if (!process.waitForFinished()) {
         process.kill();
-        QBPLOGF(QString("%1 did not finish for 30 seconds.").arg(qtDir.absoluteFilePath(qmakeProgram)));
+        QBPLOGF(QString(QStringLiteral("%1 did not finish for 30 seconds.")).arg(qtDir.absoluteFilePath(qmakeProgram)));
     }
     if (process.exitStatus() != QProcess::NormalExit)
-        QBPLOGF(QString("%1 crashed.").arg(qtDir.absoluteFilePath(qmakeProgram)));
+        QBPLOGF(QString(QStringLiteral("%1 crashed.")).arg(qtDir.absoluteFilePath(qmakeProgram)));
     if (process.exitCode() != 0)
-        QBPLOGF(QString("%1 failed, exitcode = %2.").arg(qtDir.absoluteFilePath(qmakeProgram)).arg(process.exitCode()));
+        QBPLOGF(QString(QStringLiteral("%1 failed, exitcode = %2.")).arg(qtDir.absoluteFilePath(qmakeProgram)).arg(process.exitCode()));
 
     QString s = QString::fromLocal8Bit(process.readAllStandardOutput());
-    QBPLOGV("QMake output:\n" + s);
+    QBPLOGV(QStringLiteral("QMake output:\n") + s);
 
     QTextStream ts(&s, QIODevice::ReadOnly | QIODevice::Text);
     while (!ts.atEnd()) {
         QString line = ts.readLine();
-        int col = line.indexOf(':');
+        int col = line.indexOf(QLatin1Char(':'));
         if (col == -1)
             continue;
         QString key = line.left(col);
         QString value = line.mid(col + 1);
-        QBPLOGV(QString("key:%1,value:%2").arg(key).arg(value));
-        if (key == "QMAKE_SPEC") {
+        QBPLOGV(QString(QStringLiteral("key:%1,value:%2")).arg(key).arg(value));
+        if (key == QStringLiteral("QMAKE_SPEC")) {
             if (!ArgumentsAndSettings::hostMkspec().isEmpty() && !value.contains(ArgumentsAndSettings::hostMkspec()))
-                QBPLOGW(QString("Host Mkspec detected from QMake is %1, which may not compatible with the one written in config file(%2).")
+                QBPLOGW(QString(QStringLiteral("Host Mkspec detected from QMake is %1, which may not compatible with the one written in config file(%2)."))
                             .arg(value)
                             .arg(ArgumentsAndSettings::hostMkspec()));
             ArgumentsAndSettings::setHostMkspec(value);
-        } else if (key == "QMAKE_XSPEC") {
+        } else if (key == QStringLiteral("QMAKE_XSPEC")) {
             if (!ArgumentsAndSettings::crossMkspec().isEmpty() && !value.contains(ArgumentsAndSettings::crossMkspec()))
-                QBPLOGW(QString("Cross Mkspec detected from QMake is %1, which may not compatible with the one written in config file(%2).")
+                QBPLOGW(QString(QStringLiteral("Cross Mkspec detected from QMake is %1, which may not compatible with the one written in config file(%2)."))
                             .arg(value)
                             .arg(ArgumentsAndSettings::crossMkspec()));
             ArgumentsAndSettings::setCrossMkspec(value);
-        } else if (key == "QT_VERSION") {
+        } else if (key == QStringLiteral("QT_VERSION")) {
             if (!ArgumentsAndSettings::qtVersion().isEmpty() && (value != ArgumentsAndSettings::qtVersion()))
-                QBPLOGW(
-                    QString("Qt version detected from QMake is %1, which is different with the one written in config file(%2).").arg(value).arg(ArgumentsAndSettings::qtVersion()));
+                QBPLOGW(QString(QStringLiteral("Qt version detected from QMake is %1, which is different with the one written in config file(%2)."))
+                            .arg(value)
+                            .arg(ArgumentsAndSettings::qtVersion()));
             ArgumentsAndSettings::setQtVersion(value);
-        } else if (key == "QT_INSTALL_PREFIX")
+        } else if (key == QStringLiteral("QT_INSTALL_PREFIX"))
             ArgumentsAndSettings::setOldDir(QDir(value).absolutePath());
     }
 
     if (qtConfExists)
-        qtDir.rename("bin/QQBP_qt.conf_QQBP", "bin/qt.conf");
+        qtDir.rename(QStringLiteral("bin/QQBP_qt.conf_QQBP"), QStringLiteral("bin/qt.conf"));
 
-    QBPLOGV(QString("Step2:"
-                    "hostMkspec: %1,"
-                    "crossMkspec: %2,"
-                    "qtVersion: %3,"
-                    "oldDir: %4")
+    QBPLOGV(QString(QStringLiteral("Step2:"
+                                   "hostMkspec: %1,"
+                                   "crossMkspec: %2,"
+                                   "qtVersion: %3,"
+                                   "oldDir: %4"))
                 .arg(ArgumentsAndSettings::hostMkspec())
                 .arg(ArgumentsAndSettings::crossMkspec())
                 .arg(ArgumentsAndSettings::qtVersion())
                 .arg(ArgumentsAndSettings::oldDir()));
 
-    if (ArgumentsAndSettings::oldDir().contains(QRegExp("\\s")))
-        QBPLOGF(QString("OldDir with spaces ae not supported. (%1)").arg(ArgumentsAndSettings::oldDir()));
+    if (ArgumentsAndSettings::oldDir().contains(QRegExp(QStringLiteral("\\s"))))
+        QBPLOGF(QString(QStringLiteral("OldDir with spaces ae not supported. (%1)")).arg(ArgumentsAndSettings::oldDir()));
 }
 
 // step3: generate patchers
@@ -173,7 +174,7 @@ void step3()
 
         QStringList l = patcher->findFileToPatch();
 
-        QBPLOGV(QString("Step3:File found by Patcher %1:\n%2").arg(patcher->metaObject()->className()).arg(l.join("\n")));
+        QBPLOGV(QString(QStringLiteral("Step3:File found by Patcher %1:\n%2")).arg(QString::fromUtf8(patcher->metaObject()->className())).arg(l.join(QStringLiteral("\n"))));
 
         if (!l.isEmpty())
             patcherFileMap[patcher] = l;
@@ -192,7 +193,10 @@ bool step4()
         foreach (const QString &file, l) {
             backup.backupOneFile(file);
             fail = !patcher->patchFile(file);
-            QbpLog::instance().print(QString("Step4:patched %1 using Patcher %2, result: %3").arg(file).arg(patcher->metaObject()->className()).arg(fail ? "failed" : "success"),
+            QbpLog::instance().print(QString(QStringLiteral("Step4:patched %1 using Patcher %2, result: %3"))
+                                         .arg(file)
+                                         .arg(QString::fromUtf8(patcher->metaObject()->className()))
+                                         .arg(fail ? QStringLiteral("failed") : QStringLiteral("success")),
                                      fail ? QbpLog::Error : QbpLog::Verbose);
 
             if (fail)
@@ -230,43 +234,43 @@ bool shouldForce()
 
 void warnAboutUnsupportedQtVersion()
 {
-#define SUPPORTHINT                                                                    \
-    (QString("You are going to patch Qt%1, which is %2. Patching may silently fail.\n" \
-             "Our program is supposed to be compatible with at least host builds/cross builds for Android of Qt5 after 5.6 and host builds of Qt4.8"))
+#define SUPPORTHINT                                                                                   \
+    (QString(QStringLiteral("You are going to patch Qt%1, which is %2. Patching may silently fail.\n" \
+                            "Our program is supposed to be compatible with at least host builds/cross builds for Android of Qt5 after 5.6 and host builds of Qt4.8")))
 
     QVersionNumber n = ArgumentsAndSettings::qtQVersion();
 
     if (n.majorVersion() >= 6) {
-        QBPLOGW(SUPPORTHINT.arg(ArgumentsAndSettings::qtVersion()).arg("not released by the time of writing"));
+        QBPLOGW(SUPPORTHINT.arg(ArgumentsAndSettings::qtVersion()).arg(QStringLiteral("not released by the time of writing")));
     } else if (n.majorVersion() == 5) {
         if (n.minorVersion() < 6) {
-            QBPLOGW(SUPPORTHINT.arg(ArgumentsAndSettings::qtVersion()).arg("not and won't be supported"));
-        } else if ((ArgumentsAndSettings::crossMkspec() != ArgumentsAndSettings::hostMkspec()) && !ArgumentsAndSettings::crossMkspec().startsWith("android")) {
-            QString version = QString("%1(with -xplatform %2").arg(ArgumentsAndSettings::qtVersion()).arg(ArgumentsAndSettings::crossMkspec());
-            QBPLOGW(SUPPORTHINT.arg(version).arg("not supported by now"));
+            QBPLOGW(SUPPORTHINT.arg(ArgumentsAndSettings::qtVersion()).arg(QStringLiteral("not and won't be supported")));
+        } else if ((ArgumentsAndSettings::crossMkspec() != ArgumentsAndSettings::hostMkspec()) && !ArgumentsAndSettings::crossMkspec().startsWith(QStringLiteral("android"))) {
+            QString version = QString(QStringLiteral("%1(with -xplatform %2")).arg(ArgumentsAndSettings::qtVersion()).arg(ArgumentsAndSettings::crossMkspec());
+            QBPLOGW(SUPPORTHINT.arg(version).arg(QStringLiteral("not supported by now")));
         }
     } else if (n.majorVersion() == 4) {
         if (n.minorVersion() != 8) {
-            QBPLOGW(SUPPORTHINT.arg(ArgumentsAndSettings::qtVersion()).arg("not and won't be supported"));
+            QBPLOGW(SUPPORTHINT.arg(ArgumentsAndSettings::qtVersion()).arg(QStringLiteral("not and won't be supported")));
         } else if (ArgumentsAndSettings::crossMkspec() != ArgumentsAndSettings::hostMkspec()) {
-            QString version = QString("%1 cross builds").arg(ArgumentsAndSettings::qtVersion());
-            QBPLOGW(SUPPORTHINT.arg(version).arg("not and won't be supported"));
-        } else if (!ArgumentsAndSettings::crossMkspec().startsWith("win32-") && !ArgumentsAndSettings::crossMkspec().startsWith("macx-")) {
-            QBPLOGW(SUPPORTHINT.arg(ArgumentsAndSettings::qtVersion()).arg("TODO by now"));
+            QString version = QString(QStringLiteral("%1 cross builds")).arg(ArgumentsAndSettings::qtVersion());
+            QBPLOGW(SUPPORTHINT.arg(version).arg(QStringLiteral("not and won't be supported")));
+        } else if (!ArgumentsAndSettings::crossMkspec().startsWith(QStringLiteral("win32-")) && !ArgumentsAndSettings::crossMkspec().startsWith(QStringLiteral("macx-"))) {
+            QBPLOGW(SUPPORTHINT.arg(ArgumentsAndSettings::qtVersion()).arg(QStringLiteral("TODO by now")));
         }
     } else if (n.majorVersion() < 4) {
-        QBPLOGW(SUPPORTHINT.arg(ArgumentsAndSettings::qtVersion()).arg("not and won't be supported"));
+        QBPLOGW(SUPPORTHINT.arg(ArgumentsAndSettings::qtVersion()).arg(QStringLiteral("not and won't be supported")));
     }
 }
 
 bool exitWhenSpacesExist()
 {
-    if (ArgumentsAndSettings::oldDir().contains(QRegExp("\\s"))) {
-        QBPLOGE("Old Path of Qt contains space: " + ArgumentsAndSettings::oldDir());
+    if (ArgumentsAndSettings::oldDir().contains(QRegExp(QStringLiteral("\\s")))) {
+        QBPLOGE(QStringLiteral("Old Path of Qt contains space: ") + ArgumentsAndSettings::oldDir());
         return false;
     }
-    if (ArgumentsAndSettings::newDir().contains(QRegExp("\\s"))) {
-        QBPLOGE("New Path of Qt contains space: " + ArgumentsAndSettings::newDir());
+    if (ArgumentsAndSettings::newDir().contains(QRegExp(QStringLiteral("\\s")))) {
+        QBPLOGE(QStringLiteral("New Path of Qt contains space: ") + ArgumentsAndSettings::newDir());
         return false;
     }
 

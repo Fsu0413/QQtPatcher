@@ -37,7 +37,7 @@ QStringList CMakePatcher::findFileToPatch() const
     // no absolute patchs should be found in these variables.
     static QString fileName = QStringLiteral("lib/cmake/Qt5Gui/Qt5GuiConfigExtras.cmake");
 
-    if (ArgumentsAndSettings::crossMkspec().startsWith("android")) {
+    if (ArgumentsAndSettings::crossMkspec().startsWith(QStringLiteral("android"))) {
         if (QDir(ArgumentsAndSettings::qtDir()).exists(fileName) && shouldPatch(fileName))
             return {fileName};
     }
@@ -49,7 +49,7 @@ QStringList CMakePatcher::findFileToPatch() const
 
 bool CMakePatcher::patchFile(const QString &file) const
 {
-    if (file.contains("Qt5Gui")) {
+    if (file.contains(QStringLiteral("Qt5Gui"))) {
         QFile f(QDir(ArgumentsAndSettings::qtDir()).absoluteFilePath(file));
         if (f.exists() && f.open(QIODevice::ReadOnly | QIODevice::Text)) {
             QByteArray toWrite;
@@ -57,13 +57,13 @@ bool CMakePatcher::patchFile(const QString &file) const
             while (f.readLine(arr, 9999) > 0) {
                 QString str = QString::fromUtf8(arr);
                 str = str.trimmed();
-                if (str.startsWith("_qt5gui_find_extra_libs(")) {
+                if (str.startsWith(QStringLiteral("_qt5gui_find_extra_libs("))) {
                     str = str.mid(24);
                     str.chop(1);
-                    QStringList l = str.split(" ");
-                    if (l.first() == "EGL" && l.value(1) != "\"EGL\"")
+                    QStringList l = str.split(QStringLiteral(" "));
+                    if (l.first() == QStringLiteral("EGL") && l.value(1) != QStringLiteral("\"EGL\""))
                         strcpy(arr, "    _qt5gui_find_extra_libs(EGL \"EGL\" \"\" \"\")\n");
-                    else if (l.first() == "OPENGL" && l.value(1) != "\"GLESv2\"")
+                    else if (l.first() == QStringLiteral("OPENGL") && l.value(1) != QStringLiteral("\"GLESv2\""))
                         strcpy(arr, "    _qt5gui_find_extra_libs(OPENGL \"GLESv2\" \"\" \"\")\n");
                 }
                 toWrite.append(arr);
@@ -83,22 +83,22 @@ bool CMakePatcher::patchFile(const QString &file) const
 
 bool CMakePatcher::shouldPatch(const QString &file) const
 {
-    if (file.contains("Qt5Gui")) {
+    if (file.contains(QStringLiteral("Qt5Gui"))) {
         QFile f(QDir(ArgumentsAndSettings::qtDir()).absoluteFilePath(file));
         if (f.exists() && f.open(QIODevice::ReadOnly | QIODevice::Text)) {
             char arr[10000];
             while (f.readLine(arr, 9999) > 0) {
                 QString str = QString::fromUtf8(arr);
                 str = str.trimmed();
-                if (str.startsWith("_qt5gui_find_extra_libs(")) {
+                if (str.startsWith(QStringLiteral("_qt5gui_find_extra_libs("))) {
                     str = str.mid(24);
                     str.chop(1);
-                    QStringList l = str.split(" ");
-                    QBPLOGV(l.first() + ", " + l.value(1));
-                    if (l.first() == "EGL" && l.value(1) != "\"EGL\"") {
+                    QStringList l = str.split(QStringLiteral(" "));
+                    QBPLOGV(l.first() + QStringLiteral(", ") + l.value(1));
+                    if (l.first() == QStringLiteral("EGL") && l.value(1) != QStringLiteral("\"EGL\"")) {
                         f.close();
                         return true;
-                    } else if (l.first() == "OPENGL" && l.value(1) != "\"GLESv2\"") {
+                    } else if (l.first() == QStringLiteral("OPENGL") && l.value(1) != QStringLiteral("\"GLESv2\"")) {
                         f.close();
                         return true;
                     }

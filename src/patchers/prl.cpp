@@ -36,11 +36,11 @@ QStringList PrlPatcher::findFileToPatch() const
     // patch lib/*.prl, no exception.
 
     QDir libDir(ArgumentsAndSettings::qtDir());
-    if (!libDir.cd("lib"))
+    if (!libDir.cd(QStringLiteral("lib")))
         return QStringList();
 
     libDir.setFilter(QDir::Files | QDir::NoSymLinks | QDir::NoDotAndDotDot | QDir::Readable);
-    libDir.setNameFilters({"*.prl"});
+    libDir.setNameFilters({QStringLiteral("*.prl")});
     QStringList r;
     QStringList l = libDir.entryList();
     foreach (const QString &f, l) {
@@ -53,51 +53,51 @@ QStringList PrlPatcher::findFileToPatch() const
 QString PrlPatcher::patchQmakePrlLibs(const QDir &oldLibDir, const QDir &newLibDir, const QString &value) const
 {
     QStringList r;
-    QStringList splited = value.split(" ", QString::SkipEmptyParts);
+    QStringList splited = value.split(QStringLiteral(" "), QString::SkipEmptyParts);
 
     static QDir buildLibDir(ArgumentsAndSettings::buildDir() + QStringLiteral("/lib"));
 
     foreach (const QString &m, splited) {
         QString n = m;
-        if (n.startsWith("-L=")) {
-            if (QDir(n.mid(3).replace("\\\\", "\\")) == oldLibDir)
+        if (n.startsWith(QStringLiteral("-L="))) {
+            if (QDir(n.mid(3).replace(QStringLiteral("\\\\"), QStringLiteral("\\"))) == oldLibDir)
                 n = QStringLiteral("-L=") + QDir::fromNativeSeparators(newLibDir.absolutePath());
             else {
                 if (!ArgumentsAndSettings::buildDir().isEmpty() && ArgumentsAndSettings::qtQVersion().majorVersion() == 4) {
-                    if (QDir(n.mid(3).replace("\\\\", "\\")) == buildLibDir)
+                    if (QDir(n.mid(3).replace(QStringLiteral("\\\\"), QStringLiteral("\\"))) == buildLibDir)
                         n = QStringLiteral("-L=") + QDir::fromNativeSeparators(newLibDir.absolutePath());
                 }
             }
-        } else if (n.startsWith("-L")) {
-            if (QDir(n.mid(2).replace("\\\\", "\\")) == oldLibDir)
+        } else if (n.startsWith(QStringLiteral("-L"))) {
+            if (QDir(n.mid(2).replace(QStringLiteral("\\\\"), QStringLiteral("\\"))) == oldLibDir)
                 n = QStringLiteral("-L") + QDir::fromNativeSeparators(newLibDir.absolutePath());
             else {
                 if (!ArgumentsAndSettings::buildDir().isEmpty() && ArgumentsAndSettings::qtQVersion().majorVersion() == 4) {
-                    if (QDir(n.mid(2).replace("\\\\", "\\")) == buildLibDir)
+                    if (QDir(n.mid(2).replace(QStringLiteral("\\\\"), QStringLiteral("\\"))) == buildLibDir)
                         n = QStringLiteral("-L") + QDir::fromNativeSeparators(newLibDir.absolutePath());
                 }
             }
-        } else if (!n.startsWith("-l")) {
-            QFileInfo fi(QString(n).replace("\\\\", "\\"));
+        } else if (!n.startsWith(QStringLiteral("-l"))) {
+            QFileInfo fi(QString(n).replace(QStringLiteral("\\\\"), QStringLiteral("\\")));
 
             if (fi.isAbsolute() && QDir(fi.absolutePath()) == oldLibDir) {
                 QFileInfo fiNew(newLibDir, fi.fileName());
                 if (ArgumentsAndSettings::qtQVersion().majorVersion() == 5)
                     n = QDir::fromNativeSeparators(fiNew.absoluteFilePath());
                 else
-                    n = QDir::toNativeSeparators(fiNew.absoluteFilePath()).replace("\\", "\\\\");
+                    n = QDir::toNativeSeparators(fiNew.absoluteFilePath()).replace(QStringLiteral("\\"), QStringLiteral("\\\\"));
             } else {
                 if (!ArgumentsAndSettings::buildDir().isEmpty() && ArgumentsAndSettings::qtQVersion().majorVersion() == 4) {
                     if (fi.isAbsolute() && QDir(fi.absolutePath()) == buildLibDir) {
                         QFileInfo fiNew(newLibDir, fi.fileName());
-                        n = QDir::toNativeSeparators(fiNew.absoluteFilePath()).replace("\\", "\\\\");
+                        n = QDir::toNativeSeparators(fiNew.absoluteFilePath()).replace(QStringLiteral("\\"), QStringLiteral("\\\\"));
                     }
                 }
             }
         }
         r << n;
     }
-    return r.join(" ");
+    return r.join(QStringLiteral(" "));
 }
 
 bool PrlPatcher::patchFile(const QString &file) const
@@ -117,24 +117,24 @@ bool PrlPatcher::patchFile(const QString &file) const
         char arr[10000];
         while (f.readLine(arr, 9999) > 0) {
             QString l = QString::fromUtf8(arr);
-            int equalMark = l.indexOf('=');
+            int equalMark = l.indexOf(QLatin1Char('='));
             if (equalMark != -1) {
                 QString key = l.left(equalMark).trimmed();
                 QString value = l.mid(equalMark + 1).trimmed();
-                if (key == "QMAKE_PRL_LIBS") {
+                if (key == QStringLiteral("QMAKE_PRL_LIBS")) {
                     value = patchQmakePrlLibs(oldLibDir, newLibDir, value);
                     l = QStringLiteral("QMAKE_PRL_LIBS = ") + value + QStringLiteral("\n");
                     strcpy(arr, l.toUtf8().constData());
-                } else if (key == "QMAKE_PRL_BUILD_DIR") {
+                } else if (key == QStringLiteral("QMAKE_PRL_BUILD_DIR")) {
                     if (ArgumentsAndSettings::qtQVersion().majorVersion() == 4) {
                         QString rp = oldDir.relativeFilePath(value);
-                        if (rp.contains("..")) {
+                        if (rp.contains(QStringLiteral(".."))) {
                             if (!ArgumentsAndSettings::buildDir().isEmpty())
                                 rp = buildDir.relativeFilePath(value);
                         }
 
-                        if (!rp.contains("..")) {
-                            value = QDir::fromNativeSeparators(QDir::cleanPath(newDir.absolutePath() + "/" + rp));
+                        if (!rp.contains(QStringLiteral(".."))) {
+                            value = QDir::fromNativeSeparators(QDir::cleanPath(newDir.absolutePath() + QStringLiteral("/") + rp));
                             l = QStringLiteral("QMAKE_PRL_BUILD_DIR = ") + value + QStringLiteral("\n");
                             strcpy(arr, l.toUtf8().constData());
                         }
@@ -158,7 +158,7 @@ bool PrlPatcher::patchFile(const QString &file) const
 bool PrlPatcher::shouldPatch(const QString &file) const
 {
     QDir libDir(ArgumentsAndSettings::qtDir());
-    if (!libDir.cd("lib"))
+    if (!libDir.cd(QStringLiteral("lib")))
         return false;
 
     QDir oldLibDir(ArgumentsAndSettings::oldDir() + QStringLiteral("/lib"));
@@ -177,62 +177,63 @@ bool PrlPatcher::shouldPatch(const QString &file) const
         char arr[10000];
         while (f.readLine(arr, 9999) > 0) {
             QString l = QString::fromUtf8(arr);
-            int equalMark = l.indexOf('=');
+            int equalMark = l.indexOf(QLatin1Char('='));
             if (equalMark != -1) {
                 QString key = l.left(equalMark).trimmed();
                 QString value = l.mid(equalMark + 1).trimmed();
-                if (key == "QMAKE_PRL_LIBS") {
-                    QStringList l = value.split(" ", QString::SkipEmptyParts);
+                if (key == QStringLiteral("QMAKE_PRL_LIBS")) {
+                    QStringList l = value.split(QStringLiteral(" "), QString::SkipEmptyParts);
                     foreach (const QString &m, l) {
                         QString n = m;
-                        if (n.startsWith("-L=")) {
-                            if (QDir(n.mid(3).replace("\\\\", "\\")) == oldLibDir) {
+                        if (n.startsWith(QStringLiteral("-L="))) {
+                            if (QDir(n.mid(3).replace(QStringLiteral("\\\\"), QStringLiteral("\\"))) == oldLibDir) {
                                 f.close();
                                 return true;
                             }
-                        } else if (n.startsWith("-L")) {
-                            if (QDir(n.mid(2).replace("\\\\", "\\")) == oldLibDir) {
+                        } else if (n.startsWith(QStringLiteral("-L"))) {
+                            if (QDir(n.mid(2).replace(QStringLiteral("\\\\"), QStringLiteral("\\"))) == oldLibDir) {
                                 f.close();
                                 return true;
                             }
-                        } else if (!n.startsWith("-l")) {
-                            if (QDir(QFileInfo(QString(n).replace("\\\\", "\\")).absolutePath()) == oldLibDir) {
+                        } else if (!n.startsWith(QStringLiteral("-l"))) {
+                            if (QDir(QFileInfo(QString(n).replace(QStringLiteral("\\\\"), QStringLiteral("\\"))).absolutePath()) == oldLibDir) {
                                 f.close();
                                 return true;
                             }
                         } else if (ArgumentsAndSettings::qtQVersion().majorVersion() == 4 && !ArgumentsAndSettings::buildDir().isEmpty()) {
-                            if (n.startsWith("-L=")) {
-                                if (QDir(n.mid(3).replace("\\\\", "\\")) == buildLibDir) {
+                            if (n.startsWith(QStringLiteral("-L="))) {
+                                if (QDir(n.mid(3).replace(QStringLiteral("\\\\"), QStringLiteral("\\"))) == buildLibDir) {
                                     f.close();
                                     return true;
                                 }
-                            } else if (n.startsWith("-L")) {
-                                if (QDir(n.mid(2).replace("\\\\", "\\")) == buildLibDir) {
+                            } else if (n.startsWith(QStringLiteral("-L"))) {
+                                if (QDir(n.mid(2).replace(QStringLiteral("\\\\"), QStringLiteral("\\"))) == buildLibDir) {
                                     f.close();
                                     return true;
                                 }
-                            } else if (!n.startsWith("-l")) {
-                                if (QDir(QFileInfo(QString(n).replace("\\\\", "\\")).absolutePath()) == buildLibDir) {
+                            } else if (!n.startsWith(QStringLiteral("-l"))) {
+                                if (QDir(QFileInfo(QString(n).replace(QStringLiteral("\\\\"), QStringLiteral("\\"))).absolutePath()) == buildLibDir) {
                                     f.close();
                                     return true;
                                 }
                             }
                         }
                     }
-                } else if (key == "QMAKE_PRL_BUILD_DIR") {
+                } else if (key == QStringLiteral("QMAKE_PRL_BUILD_DIR")) {
                     if (ArgumentsAndSettings::qtQVersion().majorVersion() == 4) {
-                        if (!oldDir.relativeFilePath(value).contains("..")) {
+                        if (!oldDir.relativeFilePath(value).contains(QStringLiteral(".."))) {
                             f.close();
                             return true;
                         } else if (!ArgumentsAndSettings::buildDir().isEmpty()) {
-                            if (!buildDir.relativeFilePath(value).contains("..")) {
+                            if (!buildDir.relativeFilePath(value).contains(QStringLiteral(".."))) {
                                 f.close();
                                 return true;
                             }
                         } else {
                             if (!qt4NoBuildDirWarn) {
                                 qt4NoBuildDirWarn = true;
-                                QBPLOGW("Your build of Qt seems just compiled, due to bug in Qt compile system, you should provide a config file which provides a build-dir.");
+                                QBPLOGW(QStringLiteral(
+                                    "Your build of Qt seems just compiled, due to bug in Qt compile system, you should provide a config file which provides a build-dir."));
                             }
                         }
                     }

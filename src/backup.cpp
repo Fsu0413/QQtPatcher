@@ -34,7 +34,7 @@ Backup::Backup()
 
     d->qtDir = QDir(ArgumentsAndSettings::qtDir());
 
-    QBPLOGV(QString("BackupDir: %1, QtDir: %2").arg(d->backupDir.absolutePath()).arg(d->qtDir.absolutePath()));
+    QBPLOGV(QString(QStringLiteral("BackupDir: %1, QtDir: %2")).arg(d->backupDir.absolutePath()).arg(d->qtDir.absolutePath()));
 }
 
 Backup::~Backup()
@@ -48,12 +48,12 @@ bool Backup::backupOneFile(const QString &pathRelativeToQtDir_)
 {
     QString pathRelativeToQtDir = QDir::cleanPath(pathRelativeToQtDir_);
     // detect possibly errornous backup operation?
-    if (pathRelativeToQtDir.contains("..")) {
-        QBPLOGE(QString("backupOneFile: path %1 contains \"..\", will not backup.").arg(pathRelativeToQtDir_));
+    if (pathRelativeToQtDir.contains(QStringLiteral(".."))) {
+        QBPLOGE(QString(QStringLiteral("backupOneFile: path %1 contains \"..\", will not backup.")).arg(pathRelativeToQtDir_));
         return false;
     }
 
-    QBPLOGV(QString("backuping file %1").arg(pathRelativeToQtDir));
+    QBPLOGV(QString(QStringLiteral("backuping file %1")).arg(pathRelativeToQtDir));
 
     QFileInfo fileToBackup(d->qtDir, pathRelativeToQtDir);
     QString relativeDir = d->qtDir.relativeFilePath(fileToBackup.absolutePath());
@@ -67,7 +67,7 @@ bool Backup::backupOneFile(const QString &pathRelativeToQtDir_)
 bool Backup::restoreAll()
 {
     foreach (const QString &file, d->filesBackuped) {
-        QBPLOGV(QString("restoring backup file %1").arg(file));
+        QBPLOGV(QString(QStringLiteral("restoring backup file %1")).arg(file));
         QFile::copy(d->backupDir.absoluteFilePath(file), d->qtDir.absoluteFilePath(file));
     }
     d->filesBackuped.clear();
@@ -77,7 +77,7 @@ bool Backup::restoreAll()
 
 void Backup::destroy()
 {
-    QBPLOGV(QString("deleting backup dir %1").arg(d->backupDir.absolutePath()));
+    QBPLOGV(QString(QStringLiteral("deleting backup dir %1")).arg(d->backupDir.absolutePath()));
     d->backupDir.removeRecursively();
     d->filesBackuped.clear();
 }

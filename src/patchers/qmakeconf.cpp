@@ -29,8 +29,8 @@ QStringList QMakeConfPatcher::findFileToPatch() const
         return QStringList();
 
     QDir qtDir(ArgumentsAndSettings::qtDir());
-    if (qtDir.exists("mkspecs/default/qmake.conf"))
-        return {"mkspecs/default/qmake.conf"};
+    if (qtDir.exists(QStringLiteral("mkspecs/default/qmake.conf")))
+        return {QStringLiteral("mkspecs/default/qmake.conf")};
 
     return QStringList();
 }

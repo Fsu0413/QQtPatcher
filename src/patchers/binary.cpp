@@ -52,16 +52,16 @@ QStringList BinaryPatcher::findFileToPatch4() const
 
     // qmake or qmake.exe
     QDir qtDir(ArgumentsAndSettings::qtDir());
-    if (ArgumentsAndSettings::hostMkspec().startsWith("win32")) {
-        if (qtDir.exists("bin/qmake.exe"))
-            r << "bin/qmake.exe";
+    if (ArgumentsAndSettings::hostMkspec().startsWith(QStringLiteral("win32"))) {
+        if (qtDir.exists(QStringLiteral("bin/qmake.exe")))
+            r << QStringLiteral("bin/qmake.exe");
         else
-            QBPLOGW("Cannot find bin/qmake.exe");
+            QBPLOGW(QStringLiteral("Cannot find bin/qmake.exe"));
     } else {
-        if (qtDir.exists("bin/qmake"))
-            r << "bin/qmake";
+        if (qtDir.exists(QStringLiteral("bin/qmake")))
+            r << QStringLiteral("bin/qmake");
         else
-            QBPLOGW("Cannot find bin/qmake");
+            QBPLOGW(QStringLiteral("Cannot find bin/qmake"));
     }
 
     if (ArgumentsAndSettings::hostMkspec() == ArgumentsAndSettings::crossMkspec()) {
@@ -69,40 +69,40 @@ QStringList BinaryPatcher::findFileToPatch4() const
 
         // for non-cross shared/dynamic builds, search QtCore4.dll/QtCored4.dll(on Windows),
         // or libQtCore.so(on Unix-like system such as linux), libQtCore.dylib(on macOS)
-        if (ArgumentsAndSettings::hostMkspec().startsWith("win32")) {
-            if (qtDir.exists("bin/QtCore4.dll")) {
+        if (ArgumentsAndSettings::hostMkspec().startsWith(QStringLiteral("win32"))) {
+            if (qtDir.exists(QStringLiteral("bin/QtCore4.dll"))) {
                 exist = true;
-                r << "bin/QtCore4.dll";
+                r << QStringLiteral("bin/QtCore4.dll");
             } else
-                n << "bin/QtCore4.dll";
-            if (qtDir.exists("bin/QtCored4.dll")) {
+                n << QStringLiteral("bin/QtCore4.dll");
+            if (qtDir.exists(QStringLiteral("bin/QtCored4.dll"))) {
                 exist = true;
-                r << "bin/QtCored4.dll";
+                r << QStringLiteral("bin/QtCored4.dll");
             } else
-                n << "bin/QtCored4.dll";
-            if (qtDir.exists("lib/QtCore4.dll")) {
+                n << QStringLiteral("bin/QtCored4.dll");
+            if (qtDir.exists(QStringLiteral("lib/QtCore4.dll"))) {
                 exist = true;
-                r << "lib/QtCore4.dll";
+                r << QStringLiteral("lib/QtCore4.dll");
             } else
-                n << "lib/QtCore4.dll";
-            if (qtDir.exists("lib/QtCored4.dll")) {
+                n << QStringLiteral("lib/QtCore4.dll");
+            if (qtDir.exists(QStringLiteral("lib/QtCored4.dll"))) {
                 exist = true;
-                r << "lib/QtCored4.dll";
+                r << QStringLiteral("lib/QtCored4.dll");
             } else
-                n << "lib/QtCored4.dll";
-        } else if (ArgumentsAndSettings::hostMkspec().startsWith("macx"))
+                n << QStringLiteral("lib/QtCored4.dll");
+        } else if (ArgumentsAndSettings::hostMkspec().startsWith(QStringLiteral("macx")))
             return collectBinaryFilesForQt4Mac();
         else {
-            if (qtDir.exists("lib/libQtCore.so.4")) {
+            if (qtDir.exists(QStringLiteral("lib/libQtCore.so.4"))) {
                 exist = true;
-                r << "lib/libQtCore.so.4";
+                r << QStringLiteral("lib/libQtCore.so.4");
             } else
-                n << "lib/libQtCore.so.4";
+                n << QStringLiteral("lib/libQtCore.so.4");
         }
 
         // Qt4 doesn't support static builds
         if (!exist)
-            QBPLOGW(QString("Cannot find QtCore4 dynamic/shared libs, searched files are: %1").arg(n.join(", ")));
+            QBPLOGW(QString(QStringLiteral("Cannot find QtCore4 dynamic/shared libs, searched files are: %1")).arg(n.join(QStringLiteral(", "))));
     }
 
     return r;
@@ -115,16 +115,16 @@ QStringList BinaryPatcher::findFileToPatch5() const
 
     // qmake or qmake.exe
     QDir qtDir(ArgumentsAndSettings::qtDir());
-    if (ArgumentsAndSettings::hostMkspec().startsWith("win32")) {
-        if (qtDir.exists("bin/qmake.exe"))
-            r << "bin/qmake.exe";
+    if (ArgumentsAndSettings::hostMkspec().startsWith(QStringLiteral("win32"))) {
+        if (qtDir.exists(QStringLiteral("bin/qmake.exe")))
+            r << QStringLiteral("bin/qmake.exe");
         else
-            QBPLOGW("Cannot find bin/qmake.exe");
+            QBPLOGW(QStringLiteral("Cannot find bin/qmake.exe"));
     } else {
-        if (qtDir.exists("bin/qmake"))
-            r << "bin/qmake";
+        if (qtDir.exists(QStringLiteral("bin/qmake")))
+            r << QStringLiteral("bin/qmake");
         else
-            QBPLOGW("Cannot find bin/qmake");
+            QBPLOGW(QStringLiteral("Cannot find bin/qmake"));
     }
 
     if (ArgumentsAndSettings::hostMkspec() == ArgumentsAndSettings::crossMkspec()) {
@@ -132,63 +132,63 @@ QStringList BinaryPatcher::findFileToPatch5() const
 
         // for non-cross shared/dynamic builds, search Qt5Core.dll/Qt5Cored.dll(on Windows),
         // or libQt5Core.so(on Unix-like system such as linux), libQt5Core.dylib(on macOS)
-        if (ArgumentsAndSettings::hostMkspec().startsWith("win32")) {
-            if (qtDir.exists("bin/Qt5Core.dll")) {
+        if (ArgumentsAndSettings::hostMkspec().startsWith(QStringLiteral("win32"))) {
+            if (qtDir.exists(QStringLiteral("bin/Qt5Core.dll"))) {
                 exist = true;
-                r << "bin/Qt5Core.dll";
+                r << QStringLiteral("bin/Qt5Core.dll");
             } else
-                n << "bin/Qt5Core.dll";
-            if (qtDir.exists("bin/Qt5Cored.dll")) {
+                n << QStringLiteral("bin/Qt5Core.dll");
+            if (qtDir.exists(QStringLiteral("bin/Qt5Cored.dll"))) {
                 exist = true;
-                r << "bin/Qt5Cored.dll";
+                r << QStringLiteral("bin/Qt5Cored.dll");
             } else
-                n << "bin/Qt5Cored.dll";
-        } else if (ArgumentsAndSettings::hostMkspec().startsWith("macx")) {
+                n << QStringLiteral("bin/Qt5Cored.dll");
+        } else if (ArgumentsAndSettings::hostMkspec().startsWith(QStringLiteral("macx"))) {
             // treat with framework/framework-less builds
-            if (qtDir.exists("lib/QtCore.framework/QtCore")) {
+            if (qtDir.exists(QStringLiteral("lib/QtCore.framework/QtCore"))) {
                 exist = true;
-                r << "lib/QtCore.framework/QtCore";
+                r << QStringLiteral("lib/QtCore.framework/QtCore");
             } else {
-                n << "lib/QtCore.framework/QtCore";
-                if (qtDir.exists("lib/libQt5Core.dylib")) {
+                n << QStringLiteral("lib/QtCore.framework/QtCore");
+                if (qtDir.exists(QStringLiteral("lib/libQt5Core.dylib"))) {
                     exist = true;
-                    r << "lib/libQt5Core.dylib";
+                    r << QStringLiteral("lib/libQt5Core.dylib");
                 } else
-                    n << "lib/libQt5Core.dylib";
+                    n << QStringLiteral("lib/libQt5Core.dylib");
             }
         } else {
             // we treat other platform as linux....
-            if (qtDir.exists("lib/libQt5Core.so")) {
+            if (qtDir.exists(QStringLiteral("lib/libQt5Core.so"))) {
                 exist = true;
-                r << "lib/libQt5Core.so";
+                r << QStringLiteral("lib/libQt5Core.so");
             } else
-                n << "lib/libQt5Core.so";
+                n << QStringLiteral("lib/libQt5Core.so");
         }
 
         if (!exist) {
             // check for static builds, search Qt5Core.lib/Qt5Cored.lib(if build is Windows MSVC), or libQt5Core.a(otherwise...)
-            if (ArgumentsAndSettings::hostMkspec().contains("msvc")) {
-                if (qtDir.exists("lib/Qt5Core.lib")) {
+            if (ArgumentsAndSettings::hostMkspec().contains(QStringLiteral("msvc"))) {
+                if (qtDir.exists(QStringLiteral("lib/Qt5Core.lib"))) {
                     exist = true;
-                    r << "lib/Qt5Core.lib";
+                    r << QStringLiteral("lib/Qt5Core.lib");
                 } else
-                    n << "lib/Qt5Core.lib";
-                if (qtDir.exists("lib/Qt5Cored.lib")) {
+                    n << QStringLiteral("lib/Qt5Core.lib");
+                if (qtDir.exists(QStringLiteral("lib/Qt5Cored.lib"))) {
                     exist = true;
-                    r << "lib/Qt5Cored.lib";
+                    r << QStringLiteral("lib/Qt5Cored.lib");
                 } else
-                    n << "lib/Qt5Core.lib";
+                    n << QStringLiteral("lib/Qt5Core.lib");
             } else {
-                if (qtDir.exists("lib/libQt5Core.a")) {
+                if (qtDir.exists(QStringLiteral("lib/libQt5Core.a"))) {
                     exist = true;
-                    r << "lib/libQt5Core.a";
+                    r << QStringLiteral("lib/libQt5Core.a");
                 } else
-                    n << "lib/libQt5Core.a";
+                    n << QStringLiteral("lib/libQt5Core.a");
             }
         }
 
         if (!exist)
-            QBPLOGW(QString("Cannot find Qt5Core lib, searched files are: %1").arg(n.join(", ")));
+            QBPLOGW(QString(QStringLiteral("Cannot find Qt5Core lib, searched files are: %1")).arg(n.join(QStringLiteral(", "))));
     }
 
     return r;
@@ -201,9 +201,9 @@ QStringList BinaryPatcher::collectBinaryFilesForQt4Mac() const
     QStringList r;
 
     QDir libDir(ArgumentsAndSettings::qtDir());
-    if (libDir.cd("lib")) {
+    if (libDir.cd(QStringLiteral("lib"))) {
         libDir.setFilter(QDir::NoDotAndDotDot | QDir::Dirs | QDir::NoSymLinks);
-        libDir.setNameFilters({"Qt*.framework", "phonon.framework"});
+        libDir.setNameFilters({QStringLiteral("Qt*.framework"), QStringLiteral("phonon.framework")});
         QStringList l = libDir.entryList();
         foreach (const QString &f, l) {
             QDir frameworkDir = libDir;
@@ -212,48 +212,48 @@ QStringList BinaryPatcher::collectBinaryFilesForQt4Mac() const
 
             QFileInfo fi(frameworkDir.absolutePath());
             QString baseName = fi.baseName();
-            QString libPath = "Versions/4/" + baseName;
+            QString libPath = QStringLiteral("Versions/4/") + baseName;
 
             if (frameworkDir.exists(libPath))
-                r << (QStringLiteral("lib/") + f + "/Versions/4/" + baseName);
+                r << (QStringLiteral("lib/") + f + QStringLiteral("/Versions/4/") + baseName);
         }
 
         libDir.setFilter(QDir::Files | QDir::NoDotAndDotDot | QDir::NoSymLinks | QDir::Readable);
-        libDir.setNameFilters({"libQt*.dylib", "libphonon.dylib"});
+        libDir.setNameFilters({QStringLiteral("libQt*.dylib"), QStringLiteral("libphonon.dylib")});
         l = libDir.entryList();
         foreach (const QString &f, l)
             r << (QStringLiteral("lib/") + f);
     }
 
     QDir pluginDir(ArgumentsAndSettings::qtDir());
-    if (pluginDir.cd("plugins")) {
+    if (pluginDir.cd(QStringLiteral("plugins"))) {
         pluginDir.setFilter(QDir::NoDotAndDotDot | QDir::Files | QDir::AllDirs | QDir::NoSymLinks);
-        pluginDir.setNameFilters({"*.dylib"});
+        pluginDir.setNameFilters({QStringLiteral("*.dylib")});
         QFileInfoList l = pluginDir.entryInfoList();
         foreach (const QFileInfo &f, l) {
             if (f.isDir()) {
                 QDir d(f.absoluteFilePath());
                 d.setFilter(QDir::NoDotAndDotDot | QDir::Files | QDir::NoSymLinks);
-                d.setNameFilters({"*.dylib"});
+                d.setNameFilters({QStringLiteral("*.dylib")});
                 QStringList l2 = d.entryList();
                 foreach (const QString &f2, l2)
-                    r << (QStringLiteral("plugins/") + f.fileName() + "/" + f2);
+                    r << (QStringLiteral("plugins/") + f.fileName() + QStringLiteral("/") + f2);
             } else
                 r << (QStringLiteral("plugins/") + f.fileName());
         }
     }
 
     QDir binDir(ArgumentsAndSettings::qtDir());
-    if (binDir.cd("bin")) {
+    if (binDir.cd(QStringLiteral("bin"))) {
         // clang-format off
         static const QStringList knownQt4Apps {
-            "Assistant.app",
-            "Designer.app",
-            "Linguist.app",
-            "QMLViewer.app",
-            "pixeltool.app",
-            "qhelpconverter.app",
-            "qttracereplay.app"
+            QStringLiteral("Assistant.app"),
+            QStringLiteral("Designer.app"),
+            QStringLiteral("Linguist.app"),
+            QStringLiteral("QMLViewer.app"),
+            QStringLiteral("pixeltool.app"),
+            QStringLiteral("qhelpconverter.app"),
+            QStringLiteral("qttracereplay.app")
         };
         // clang-format on
 
@@ -268,30 +268,30 @@ QStringList BinaryPatcher::collectBinaryFilesForQt4Mac() const
 
             QFileInfo fi(appDir.absolutePath());
             QString baseName = fi.baseName();
-            QString binPath = "Contents/MacOS/" + baseName;
+            QString binPath = QStringLiteral("Contents/MacOS/") + baseName;
 
             if (appDir.exists(binPath))
-                r << (QStringLiteral("bin/") + f + "/Contents/MacOS/" + baseName);
+                r << (QStringLiteral("bin/") + f + QStringLiteral("/Contents/MacOS/") + baseName);
         }
 
         // clang-format off
         static const QStringList knownQt4Tools {
-            "lconvert",
-            "lrelease",
-            "lupdate",
-            "macdeployqt",
-            "moc",
-            "qcollectiongenerator",
-            "qdoc3",
-            "qhelpgenerator",
-            "qmake",
-            "qmlplugindump",
-            "qt3to4",
-            "rcc",
-            "uic",
-            "uic3",
-            "xmlpatterns",
-            "xmlpatternsvalidator"
+            QStringLiteral("lconvert"),
+            QStringLiteral("lrelease"),
+            QStringLiteral("lupdate"),
+            QStringLiteral("macdeployqt"),
+            QStringLiteral("moc"),
+            QStringLiteral("qcollectiongenerator"),
+            QStringLiteral("qdoc3"),
+            QStringLiteral("qhelpgenerator"),
+            QStringLiteral("qmake"),
+            QStringLiteral("qmlplugindump"),
+            QStringLiteral("qt3to4"),
+            QStringLiteral("rcc"),
+            QStringLiteral("uic"),
+            QStringLiteral("uic3"),
+            QStringLiteral("xmlpatterns"),
+            QStringLiteral("xmlpatternsvalidator")
         };
         // clang-format on
 
@@ -308,25 +308,25 @@ QStringList BinaryPatcher::collectBinaryFilesForQt4Mac() const
 void BinaryPatcher::changeBinaryPathsForQt4Mac(const QString &file) const
 {
     QProcess otool;
-    otool.start("otool", {"-L", file});
+    otool.start(QStringLiteral("otool"), {QStringLiteral("-L"), file});
     otool.waitForFinished();
 
-    QString output = otool.readAllStandardOutput();
-    QBPLOGV("otool output:");
+    QString output = QString::fromUtf8(otool.readAllStandardOutput());
+    QBPLOGV(QStringLiteral("otool output:"));
     QBPLOGV(output);
 
-    QStringList outputLines = output.split("\n", QString::SkipEmptyParts);
+    QStringList outputLines = output.split(QStringLiteral("\n"), QString::SkipEmptyParts);
     outputLines.removeFirst();
 
-    QDir libDir(ArgumentsAndSettings::oldDir() + "/lib");
-    QDir newDir(ArgumentsAndSettings::newDir() + "/lib");
+    QDir libDir(ArgumentsAndSettings::oldDir() + QStringLiteral("/lib"));
+    QDir newDir(ArgumentsAndSettings::newDir() + QStringLiteral("/lib"));
 
-    if (file.contains(".dylib") || file.contains(".framework")) {
+    if (file.contains(QStringLiteral(".dylib")) || file.contains(QStringLiteral(".framework"))) {
         // The first line of their name is "LC_ID_DYLIB", it should be changed using "install_name_tool -id"
         QString id = outputLines.first();
-        QString fileName = id.split("(compatibility").first().trimmed();
-        if (fileName.startsWith("/")) {
-            QBPLOGV("Qt library detected, installing LC_ID_DYLIB");
+        QString fileName = id.split(QStringLiteral("(compatibility")).first().trimmed();
+        if (fileName.startsWith(QStringLiteral("/"))) {
+            QBPLOGV(QStringLiteral("Qt library detected, installing LC_ID_DYLIB"));
             QString relativeToPath;
             QString path = getPathForQt4Mac(fileName, relativeToPath);
 
@@ -334,19 +334,19 @@ void BinaryPatcher::changeBinaryPathsForQt4Mac(const QString &file) const
             if (QDir::toNativeSeparators(path) == QDir::toNativeSeparators(libDir.absolutePath())) {
                 QString newPath = newDir.absoluteFilePath(relativeToPath);
                 QProcess installNameTool;
-                installNameTool.start("install_name_tool", {"-id", newPath, file});
+                installNameTool.start(QStringLiteral("install_name_tool"), {QStringLiteral("-id"), newPath, file});
                 installNameTool.waitForFinished();
-                QBPLOGV(installNameTool.program() + " " + installNameTool.arguments().join(" "));
+                QBPLOGV(installNameTool.program() + QStringLiteral(" ") + installNameTool.arguments().join(QStringLiteral(" ")));
             }
         } else {
-            QBPLOGV("Plugin detected.");
+            QBPLOGV(QStringLiteral("Plugin detected."));
         }
         outputLines.removeFirst();
     }
 
     // use "install_name_tool -change" to change remaining path
     foreach (const QString &dyld, outputLines) {
-        QString fileName = dyld.split("(compatibility").first().trimmed();
+        QString fileName = dyld.split(QStringLiteral("(compatibility")).first().trimmed();
         QString relativeToPath;
         QString path = getPathForQt4Mac(fileName, relativeToPath);
 
@@ -354,33 +354,33 @@ void BinaryPatcher::changeBinaryPathsForQt4Mac(const QString &file) const
         if (QDir::toNativeSeparators(path) == QDir::toNativeSeparators(libDir.absolutePath())) {
             QString newPath = newDir.absoluteFilePath(relativeToPath);
             QProcess installNameTool;
-            installNameTool.start("install_name_tool", {"-change", fileName, newPath, file});
+            installNameTool.start(QStringLiteral("install_name_tool"), {QStringLiteral("-change"), fileName, newPath, file});
             installNameTool.waitForFinished();
-            QBPLOGV(installNameTool.program() + " " + installNameTool.arguments().join(" "));
+            QBPLOGV(installNameTool.program() + QStringLiteral(" ") + installNameTool.arguments().join(QStringLiteral(" ")));
         }
     }
 }
 
 bool BinaryPatcher::isQmakeOrQtCoreForQt4Mac(const QString &file) const
 {
-    return file.endsWith("qmake") || file.endsWith("QtCore") || file.endsWith("QtCore.dylib");
+    return file.endsWith(QStringLiteral("qmake")) || file.endsWith(QStringLiteral("QtCore")) || file.endsWith(QStringLiteral("QtCore.dylib"));
 }
 
 QString BinaryPatcher::getPathForQt4Mac(const QString &fileName, QString &relativeToRet) const
 {
     QString r;
-    if (fileName.endsWith(".dylib")) {
+    if (fileName.endsWith(QStringLiteral(".dylib"))) {
         QFileInfo fileInfo(fileName);
         relativeToRet = fileInfo.fileName();
         r = fileInfo.absolutePath();
-    } else if (fileName.contains(".framework")) {
-        QString frameworkName = fileName.left(fileName.lastIndexOf(".framework")) + QStringLiteral(".framework");
+    } else if (fileName.contains(QStringLiteral(".framework"))) {
+        QString frameworkName = fileName.left(fileName.lastIndexOf(QStringLiteral(".framework"))) + QStringLiteral(".framework");
         QFileInfo fileInfo(frameworkName);
         QDir d(fileInfo.absoluteDir());
         relativeToRet = d.relativeFilePath(fileName);
         r = d.absolutePath();
-    } else if (fileName.contains(".app")) {
-        QString appName = fileName.left(fileName.lastIndexOf(".app")) + QStringLiteral(".app");
+    } else if (fileName.contains(QStringLiteral(".app"))) {
+        QString appName = fileName.left(fileName.lastIndexOf(QStringLiteral(".app"))) + QStringLiteral(".app");
         QFileInfo fileInfo(appName);
         QDir d(fileInfo.absoluteDir());
         relativeToRet = d.relativeFilePath(fileName);
@@ -390,7 +390,7 @@ QString BinaryPatcher::getPathForQt4Mac(const QString &fileName, QString &relati
         relativeToRet = fileInfo.fileName();
         r = fileInfo.absolutePath();
     }
-    QBPLOGV(QString("BinaryPatcher::getPathForQt4Mac: filename = %1, relativeToRet = %2, ret = %3").arg(fileName).arg(relativeToRet).arg(r));
+    QBPLOGV(QString(QStringLiteral("BinaryPatcher::getPathForQt4Mac: filename = %1, relativeToRet = %2, ret = %3")).arg(fileName).arg(relativeToRet).arg(r));
 
     return r;
 }
@@ -408,21 +408,21 @@ bool BinaryPatcher::patchFile(const QString &file) const
     static const QList<KeySuffixPair> l4 {
         qMakePair<QByteArray, QString>("qt_prfxpath=", QString()),
         qMakePair<QByteArray, QString>("qt_datapath=", QString()),
-        qMakePair<QByteArray, QString>("qt_docspath=", "/doc"),
-        qMakePair<QByteArray, QString>("qt_hdrspath=", "/include"),
-        qMakePair<QByteArray, QString>("qt_libspath=", "/lib"),
-        qMakePair<QByteArray, QString>("qt_binspath=", "/bin"),
-        qMakePair<QByteArray, QString>("qt_plugpath=", "/plugins"),
-        qMakePair<QByteArray, QString>("qt_impspath=", "/imports"),
-        qMakePair<QByteArray, QString>("qt_trnspath=", "/translations"),
-        qMakePair<QByteArray, QString>("qt_xmplpath=", "/examples"),
-        qMakePair<QByteArray, QString>("qt_demopath=", "/demos")
+        qMakePair<QByteArray, QString>("qt_docspath=", QStringLiteral("/doc")),
+        qMakePair<QByteArray, QString>("qt_hdrspath=", QStringLiteral("/include")),
+        qMakePair<QByteArray, QString>("qt_libspath=", QStringLiteral("/lib")),
+        qMakePair<QByteArray, QString>("qt_binspath=", QStringLiteral("/bin")),
+        qMakePair<QByteArray, QString>("qt_plugpath=", QStringLiteral("/plugins")),
+        qMakePair<QByteArray, QString>("qt_impspath=", QStringLiteral("/imports")),
+        qMakePair<QByteArray, QString>("qt_trnspath=", QStringLiteral("/translations")),
+        qMakePair<QByteArray, QString>("qt_xmplpath=", QStringLiteral("/examples")),
+        qMakePair<QByteArray, QString>("qt_demopath=", QStringLiteral("/demos"))
     };
     // clang-format on
 
     const QList<KeySuffixPair> *l = &l5;
     if (ArgumentsAndSettings::qtQVersion().majorVersion() == 4) {
-        if (ArgumentsAndSettings::hostMkspec().startsWith("macx")) {
+        if (ArgumentsAndSettings::hostMkspec().startsWith(QStringLiteral("macx"))) {
             changeBinaryPathsForQt4Mac(file);
             if (!isQmakeOrQtCoreForQt4Mac(file))
                 return true;
@@ -451,11 +451,11 @@ bool BinaryPatcher::patchFile(const QString &file) const
             binFile.write(arr);
             binFile.close();
         } else {
-            QBPLOGE(QString("file %1 is not writable during patching.").arg(binFile.fileName()));
+            QBPLOGE(QString(QStringLiteral("file %1 is not writable during patching.")).arg(binFile.fileName()));
             return false;
         }
     } else {
-        QBPLOGE(QString("file %1 is not found or not readable during patching.").arg(binFile.fileName()));
+        QBPLOGE(QString(QStringLiteral("file %1 is not found or not readable during patching.")).arg(binFile.fileName()));
         return false;
     }
     return true;

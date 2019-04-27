@@ -49,7 +49,7 @@ void QbpLog::print(const QString &c, LogLevel l)
 {
     bool levelAvailable = true;
     bool fatalError = false;
-    static const QStringList logLevelStr {"Verbose", "Warning", "Error", "Fatal"};
+    static const QStringList logLevelStr {QStringLiteral("Verbose"), QStringLiteral("Warning"), QStringLiteral("Error"), QStringLiteral("Fatal")};
     switch (l) {
     case Verbose:
         if (d->verbose)
@@ -68,12 +68,12 @@ void QbpLog::print(const QString &c, LogLevel l)
     default:
         // ???
         levelAvailable = false;
-        print(QString("Log Level %1 is not available for log \"%2\"").arg(static_cast<int>(l)).arg(c), Warning);
+        print(QString(QStringLiteral("Log Level %1 is not available for log \"%2\"")).arg(static_cast<int>(l)).arg(c), Warning);
         break;
     }
 
     if (levelAvailable && d->f.isOpen())
-        d->f.write(QString("%1:%2\n").arg(logLevelStr.value(static_cast<int>(l))).arg(c).toUtf8().constData());
+        d->f.write(QString(QStringLiteral("%1:%2\n")).arg(logLevelStr.value(static_cast<int>(l))).arg(c).toUtf8().constData());
 
     if (fatalError)
         qFatal("%s", c.toUtf8().constData());

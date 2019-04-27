@@ -33,12 +33,12 @@ QStringList PriPatcher::findFileToPatch() const
 
     // Output a warning when a linked OpenSSL is found
     // may need patch manually when OpenSSL build dir moved
-    if (QDir(ArgumentsAndSettings::qtDir()).exists("mkspecs/modules/qt_lib_network_private.pri"))
-        openSSLDirWarning("mkspecs/modules/qt_lib_network_private.pri");
+    if (QDir(ArgumentsAndSettings::qtDir()).exists(QStringLiteral("mkspecs/modules/qt_lib_network_private.pri")))
+        openSSLDirWarning(QStringLiteral("mkspecs/modules/qt_lib_network_private.pri"));
 
     // patch "mkspecs/modules/qt_lib_gui_private.pri" in cross versions? or only for android?
-    QString fileName = "mkspecs/modules/qt_lib_gui_private.pri";
-    if (ArgumentsAndSettings::crossMkspec().startsWith("android")) {
+    QString fileName = QStringLiteral("mkspecs/modules/qt_lib_gui_private.pri");
+    if (ArgumentsAndSettings::crossMkspec().startsWith(QStringLiteral("android"))) {
         if (QDir(ArgumentsAndSettings::qtDir()).exists(fileName) && shouldPatch(fileName))
             return {fileName};
     }
@@ -50,24 +50,24 @@ QStringList PriPatcher::findFileToPatch() const
 
 bool PriPatcher::patchFile(const QString &file) const
 {
-    if (file.contains("qt_lib_gui")) {
+    if (file.contains(QStringLiteral("qt_lib_gui"))) {
         QFile f(QDir(ArgumentsAndSettings::qtDir()).absoluteFilePath(file));
         if (f.exists() && f.open(QIODevice::ReadOnly | QIODevice::Text)) {
             QByteArray toWrite;
             char arr[10000];
             while (f.readLine(arr, 9999) > 0) {
                 QString l = QString::fromUtf8(arr);
-                int equalMark = l.indexOf('=');
+                int equalMark = l.indexOf(QLatin1Char('='));
                 if (equalMark != -1) {
                     QString key = l.left(equalMark).trimmed();
                     QString value = l.mid(equalMark + 1).trimmed();
-                    if (key == "QMAKE_LIBS_OPENGL_ES2") {
-                        value = "-lGLESv2";
-                        l = key + " = " + value + "\n";
+                    if (key == QStringLiteral("QMAKE_LIBS_OPENGL_ES2")) {
+                        value = QStringLiteral("-lGLESv2");
+                        l = key + QStringLiteral(" = ") + value + QStringLiteral("\n");
                         strcpy(arr, l.toUtf8().constData());
-                    } else if (key == "QMAKE_LIBS_EGL") {
-                        value = "-lEGL";
-                        l = key + " = " + value + "\n";
+                    } else if (key == QStringLiteral("QMAKE_LIBS_EGL")) {
+                        value = QStringLiteral("-lEGL");
+                        l = key + QStringLiteral(" = ") + value + QStringLiteral("\n");
                         strcpy(arr, l.toUtf8().constData());
                     }
                 }
@@ -88,20 +88,20 @@ bool PriPatcher::patchFile(const QString &file) const
 
 void PriPatcher::openSSLDirWarning(const QString &file) const
 {
-    if (file.contains("qt_lib_network")) {
+    if (file.contains(QStringLiteral("qt_lib_network"))) {
         QFile f(QDir(ArgumentsAndSettings::qtDir()).absoluteFilePath(file));
         if (f.exists() && f.open(QIODevice::ReadOnly | QIODevice::Text)) {
             char arr[10000];
             while (f.readLine(arr, 9999) > 0) {
                 QString l = QString::fromUtf8(arr);
-                int equalMark = l.indexOf('=');
+                int equalMark = l.indexOf(QLatin1Char('='));
                 if (equalMark != -1) {
                     QString key = l.left(equalMark).trimmed();
                     QString value = l.mid(equalMark + 1).trimmed();
-                    if (key == "QMAKE_LIBS_OPENSSL" && !value.isEmpty()) {
-                        QBPLOGW(QString("Warning: Seems like you are using linked OpenSSL. "
-                                        "Since we can\'t detect the path where you put OpenSSL in, "
-                                        "you should probably manually modify %1 after you moved OpenSSL.")
+                    if (key == QStringLiteral("QMAKE_LIBS_OPENSSL") && !value.isEmpty()) {
+                        QBPLOGW(QString(QStringLiteral("Warning: Seems like you are using linked OpenSSL. "
+                                                       "Since we can\'t detect the path where you put OpenSSL in, "
+                                                       "you should probably manually modify %1 after you moved OpenSSL."))
                                     .arg(f.fileName()));
                         return;
                     }
@@ -114,17 +114,17 @@ void PriPatcher::openSSLDirWarning(const QString &file) const
 
 bool PriPatcher::shouldPatch(const QString &file) const
 {
-    if (file.contains("qt_lib_gui")) {
+    if (file.contains(QStringLiteral("qt_lib_gui"))) {
         QFile f(QDir(ArgumentsAndSettings::qtDir()).absoluteFilePath(file));
         if (f.exists() && f.open(QIODevice::ReadOnly | QIODevice::Text)) {
             char arr[10000];
             while (f.readLine(arr, 9999) > 0) {
                 QString l = QString::fromUtf8(arr);
-                int equalMark = l.indexOf('=');
+                int equalMark = l.indexOf(QLatin1Char('='));
                 if (equalMark != -1) {
                     QString key = l.left(equalMark).trimmed();
                     QString value = l.mid(equalMark + 1).trimmed();
-                    if ((key == "QMAKE_LIBS_OPENGL_ES2" || key == "QMAKE_LIBS_EGL") && !value.startsWith("-l")) {
+                    if ((key == QStringLiteral("QMAKE_LIBS_OPENGL_ES2") || key == QStringLiteral("QMAKE_LIBS_EGL")) && !value.startsWith(QStringLiteral("-l"))) {
                         f.close();
                         return true;
                     }
