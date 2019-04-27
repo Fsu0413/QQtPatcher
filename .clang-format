@@ -43,6 +43,6 @@ SpaceInEmptyParentheses: false
 SpacesInAngles: false
 SpacesInParentheses: false
 SpacesInSquareBrackets: false
-Standard: Cpp03
+Standard: Cpp11
 UseTab: Never
 TabWidth: 4
