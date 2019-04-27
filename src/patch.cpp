@@ -251,7 +251,7 @@ void warnAboutUnsupportedQtVersion()
         } else if (ArgumentsAndSettings::crossMkspec() != ArgumentsAndSettings::hostMkspec()) {
             QString version = QString("%1 cross builds").arg(ArgumentsAndSettings::qtVersion());
             QBPLOGW(SUPPORTHINT.arg(version).arg("not and won't be supported"));
-        } else if (!ArgumentsAndSettings::crossMkspec().startsWith("win32-")) {
+        } else if (!ArgumentsAndSettings::crossMkspec().startsWith("win32-") && !ArgumentsAndSettings::crossMkspec().startsWith("macx-")) {
             QBPLOGW(SUPPORTHINT.arg(ArgumentsAndSettings::qtVersion()).arg("TODO by now"));
         }
     } else if (n.majorVersion() < 4) {
