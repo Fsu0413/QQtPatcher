@@ -53,13 +53,13 @@ void QbpLog::print(const QString &c, LogLevel l)
     switch (l) {
     case Verbose:
         if (d->verbose)
-            qDebug(c.toUtf8().constData());
+            qDebug("%s", c.toUtf8().constData());
         break;
     case Warning:
-        qWarning(c.toUtf8().constData());
+        qWarning("%s", c.toUtf8().constData());
         break;
     case Error:
-        qCritical(c.toUtf8().constData());
+        qCritical("%s", c.toUtf8().constData());
         break;
     case Fatal:
         // qFatal will call exit();
@@ -76,7 +76,7 @@ void QbpLog::print(const QString &c, LogLevel l)
         d->f.write(QString("%1:%2\n").arg(logLevelStr.value(static_cast<int>(l))).arg(c).toUtf8().constData());
 
     if (fatalError)
-        qFatal(c.toUtf8().constData());
+        qFatal("%s", c.toUtf8().constData());
 }
 
 QbpLog::QbpLog()
