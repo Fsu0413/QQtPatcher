@@ -230,40 +230,32 @@ bool shouldForce()
 
 void warnAboutUnsupportedQtVersion()
 {
+#define SUPPORTHINT                                                                    \
+    (QString("You are going to patch Qt%1, which is %2. Patching may silently fail.\n" \
+             "Our program is supposed to be compatible with at least host builds/cross builds for Android of Qt5 after 5.6 and host builds of Qt4.8"))
+
     QVersionNumber n = ArgumentsAndSettings::qtQVersion();
-    if (n.majorVersion() != 5) {
-        if (n.majorVersion() < 4) {
-            QBPLOGW(QString("You are going to patch Qt%1, which is not and won't be supported. Patching may silently fail.\n"
-                            "Our program is supposed to be compatible with at least host builds/cross builds for Android of Qt5 after 5.6 and host builds of Qt4.8")
-                        .arg(ArgumentsAndSettings::qtVersion()));
-        } else if (n.majorVersion() >= 6) {
-            QBPLOGW(QString("You are going to patch Qt%1, which is TODO by now. Patching may silently fail.\n"
-                            "Our program is supposed to be compatible with at least host builds/cross builds for Android of Qt5 after 5.6 and host builds of Qt4.8")
-                        .arg(ArgumentsAndSettings::qtVersion()));
-        } else if (n.minorVersion() != 8) {
-            QBPLOGW(QString("You are going to patch Qt%1, which is not and won't be supported. Patching may silently fail.\n"
-                            "Our program is supposed to be compatible with at least host builds/cross builds for Android of Qt5 after 5.6 and host builds of Qt4.8")
-                        .arg(ArgumentsAndSettings::qtVersion()));
-        } else if (ArgumentsAndSettings::crossMkspec() != ArgumentsAndSettings::hostMkspec()) {
-            QBPLOGW(QString("You are going to patch Qt%1 cross builds, which is not and won't be supported. Patching may silently fail.\n"
-                            "Our program is supposed to be compatible with at least host builds/cross builds for Android of Qt5 after 5.6 and host builds of Qt4.8")
-                        .arg(ArgumentsAndSettings::qtVersion()));
-        } else if (!ArgumentsAndSettings::crossMkspec().startsWith("win32-")) {
-            QBPLOGW(QString("You are going to patch Qt%1, which is TODO by now. Patching may silently fail.\n"
-                            "Our program is supposed to be compatible with at least host builds/cross builds for Android of Qt5 after 5.6 and host builds of Qt4.8")
-                        .arg(ArgumentsAndSettings::qtVersion()));
-        }
-    } else {
+
+    if (n.majorVersion() >= 6) {
+        QBPLOGW(SUPPORTHINT.arg(ArgumentsAndSettings::qtVersion()).arg("not released by the time of writing"));
+    } else if (n.majorVersion() == 5) {
         if (n.minorVersion() < 6) {
-            QBPLOGW(QString("You are going to patch Qt%1, which is not and won't be supported. Patching may silently fail.\n"
-                            "Our program is supposed to be compatible with at least host builds/cross builds for Android of Qt5 after 5.6 and host builds of Qt4.8")
-                        .arg(ArgumentsAndSettings::qtVersion()));
+            QBPLOGW(SUPPORTHINT.arg(ArgumentsAndSettings::qtVersion()).arg("not and won't be supported"));
         } else if ((ArgumentsAndSettings::crossMkspec() != ArgumentsAndSettings::hostMkspec()) && !ArgumentsAndSettings::crossMkspec().startsWith("android")) {
-            QBPLOGW(QString("You are going to patch Qt%1(with -xplatform %2), which is not supported by now. Patching may silently fail.\n"
-                            "Our program is supposed to be compatible with at least host builds/cross builds for Android of Qt5 after 5.6 and host builds of Qt4.8")
-                        .arg(ArgumentsAndSettings::qtVersion())
-                        .arg(ArgumentsAndSettings::crossMkspec()));
+            QString version = QString("%1(with -xplatform %2").arg(ArgumentsAndSettings::qtVersion()).arg(ArgumentsAndSettings::crossMkspec());
+            QBPLOGW(SUPPORTHINT.arg(version).arg("not supported by now"));
         }
+    } else if (n.majorVersion() == 4) {
+        if (n.minorVersion() != 8) {
+            QBPLOGW(SUPPORTHINT.arg(ArgumentsAndSettings::qtVersion()).arg("not and won't be supported"));
+        } else if (ArgumentsAndSettings::crossMkspec() != ArgumentsAndSettings::hostMkspec()) {
+            QString version = QString("%1 cross builds").arg(ArgumentsAndSettings::qtVersion());
+            QBPLOGW(SUPPORTHINT.arg(version).arg("not and won't be supported"));
+        } else if (!ArgumentsAndSettings::crossMkspec().startsWith("win32-")) {
+            QBPLOGW(SUPPORTHINT.arg(ArgumentsAndSettings::qtVersion()).arg("TODO by now"));
+        }
+    } else if (n.majorVersion() < 4) {
+        QBPLOGW(SUPPORTHINT.arg(ArgumentsAndSettings::qtVersion()).arg("not and won't be supported"));
     }
 }
 
