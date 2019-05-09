@@ -263,7 +263,11 @@ void warnAboutUnsupportedQtVersion()
             if (!flag) {
                 QString version = QString(QStringLiteral("%1(with -xplatform %2")).arg(ArgumentsAndSettings::qtVersion()).arg(ArgumentsAndSettings::crossMkspec());
                 QBPLOGW(SUPPORTHINT.arg(version).arg(QStringLiteral("TODO by now")));
+            } else {
+                // supported
             }
+        } else {
+            // supported
         }
     } else if (n.majorVersion() == 4) {
         if (n.minorVersion() != 8) {
@@ -273,9 +277,13 @@ void warnAboutUnsupportedQtVersion()
             QBPLOGW(SUPPORTHINT.arg(version).arg(QStringLiteral("not and won't be supported")));
         } else if (!ArgumentsAndSettings::crossMkspec().startsWith(QStringLiteral("win32-")) && !ArgumentsAndSettings::crossMkspec().startsWith(QStringLiteral("macx-"))) {
             QBPLOGW(SUPPORTHINT.arg(ArgumentsAndSettings::qtVersion()).arg(QStringLiteral("TODO by now")));
+        } else {
+            // supported
         }
     } else if (n.majorVersion() < 4) {
         QBPLOGW(SUPPORTHINT.arg(ArgumentsAndSettings::qtVersion()).arg(QStringLiteral("not and won't be supported")));
+    } else {
+        // impossible?
     }
 }
 
