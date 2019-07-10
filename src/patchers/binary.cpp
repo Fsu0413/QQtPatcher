@@ -442,6 +442,7 @@ bool BinaryPatcher::patchFile(const QString &file) const
                     plusPath.append(QDir::fromNativeSeparators(QDir(ArgumentsAndSettings::newDir() + i.second).absolutePath()).toUtf8());
                 else
                     plusPath.append(QDir::toNativeSeparators(QDir(ArgumentsAndSettings::newDir() + i.second).absolutePath()).toUtf8());
+                plusPath.append('\0');
                 arr.replace(index, plusPath.length(), plusPath);
                 index += plusPath.length();
             }
