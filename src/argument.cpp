@@ -53,10 +53,15 @@ bool ArgumentsAndSettings::parse()
 
     QCommandLineParser parser;
     parser.setSingleDashWordOptionMode(QCommandLineParser::ParseAsLongOptions);
-    parser.setApplicationDescription(QStringLiteral("Tool for patching paths in Qt binaries.\n"
-                                                    "This is a reworked version, using a static compiled Qt " QT_VERSION_STR ".\n"
-                                                    "Frank Su, 2019. http://mogara.org\n\n"
-                                                    "Thanks for Yuri V. Krugloff at http://www.tver-soft.org."));
+    parser.setApplicationDescription(QString(QStringLiteral("Tool for patching paths in compiled Qt library.\n"
+                                                            "This is a reworked version, using %1Qt " QT_VERSION_STR ".\n"
+                                                            "Frank Su, 2019. http://mogara.org\n\n"
+                                                            "Thanks for Yuri V. Krugloff at http://www.tver-soft.org."))
+#ifdef QT_STATIC
+                                         .arg(QStringLiteral("a staticly compiled ")));
+#else
+                                         .arg(QStringLiteral("")));
+#endif
 
     parser.addVersionOption();
     parser.addHelpOption();
@@ -71,7 +76,7 @@ bool ArgumentsAndSettings::parse()
     parser.addOption(QCommandLineOption({QStringLiteral("f"), QStringLiteral("force")}, QStringLiteral("Force patching (without old path actuality checking).")));
     parser.addOption(QCommandLineOption({QStringLiteral("q"), QStringLiteral("qt-dir")},
                                         QStringLiteral("Directory, where Qt or qmake is now located (may be relative).\n"
-                                                       "If not specified, will be used current directory. Patcher will "
+                                                       "If not specified, will use current directory. Patcher will "
                                                        "search qmake first in directory \"path\", and then in its subdir "
                                                        "\"bin\". Patcher is NEVER looking qmake in other directories.\n"
                                                        "WARNING: If nonstandard directory for binary files is used "

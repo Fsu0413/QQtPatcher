@@ -49,7 +49,7 @@ QStringList PriPatcher::findFileToPatch() const
     // Qt 5.9 does not have these stuff
     // I have not built Qt 5.10/5.11, so I can't confirm
     // All of my builds of Qt 5.13 have been removed, I can't confirm either
-    // Qt 5.14 has this problem fixed
+    // Qt 5.14 has this problem fixed(Since QQtPatcher won't support Qt 5.14, I will not test)
     if (ArgumentsAndSettings::qtQVersion().minorVersion() >= 10 && ArgumentsAndSettings::qtQVersion().minorVersion() <= 13) {
         if (ArgumentsAndSettings::crossMkspec().startsWith(crossMkspecStartsWith)) {
             QStringList r;

@@ -114,7 +114,7 @@ void step2(const QString &qmakeProgram)
         QBPLOGF(QString(QStringLiteral("%1 failed, exitcode = %2.")).arg(qtDir.absoluteFilePath(qmakeProgram)).arg(process.exitCode()));
 
     QString s = QString::fromLocal8Bit(process.readAllStandardOutput());
-    QBPLOGV(QStringLiteral("QMake output:\n") + s);
+    QBPLOGV(QStringLiteral("qmake output:\n") + s);
 
     QTextStream ts(&s, QIODevice::ReadOnly | QIODevice::Text);
     while (!ts.atEnd()) {
@@ -174,12 +174,13 @@ void step3()
 
         QStringList l = patcher->findFileToPatch();
 
-        QBPLOGV(QString(QStringLiteral("Step3:File found by Patcher %1:\n%2")).arg(QString::fromUtf8(patcher->metaObject()->className())).arg(l.join(QStringLiteral("\n"))));
-
-        if (!l.isEmpty())
+        if (!l.isEmpty()) {
+            QBPLOGV(QString(QStringLiteral("Step3:File found by Patcher %1:\n%2")).arg(QString::fromUtf8(patcher->metaObject()->className())).arg(l.join(QStringLiteral("\n"))));
             patcherFileMap[patcher] = l;
-        else
+        } else {
+            QBPLOGV(QString(QStringLiteral("Step3:No file found by Patcher %1:\n%2")).arg(QString::fromUtf8(patcher->metaObject()->className())));
             delete patcher;
+        }
     }
 }
 

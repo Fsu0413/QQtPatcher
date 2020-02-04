@@ -16,6 +16,8 @@ VERSION = 0.7.0
 
 win32 {
     RC_ICONS = res/QQtPatcher.ico
+    QMAKE_TARGET_PRODUCT = "QQtPatcher"
+    QMAKE_TARGET_DESCRIPTION = "Tool for patching paths in compiled Qt library"
 }
 
 
