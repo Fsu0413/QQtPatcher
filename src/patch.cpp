@@ -254,6 +254,7 @@ void warnAboutUnsupportedQtVersion()
                 static const QStringList supportedCrossMkspec {
                     QStringLiteral("android-"),
                     QStringLiteral("wasm-"),
+                    QStringLiteral("win32-arm64-msvc"),
                 };
                 // clang-format on
                 bool flag = false;

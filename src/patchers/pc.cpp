@@ -31,7 +31,8 @@ PcPatcher::~PcPatcher()
 QStringList PcPatcher::findFileToPatch() const
 {
     // patch lib/pkgconfig/Qt*.pc if pkg-config is enabled, otherwise patch nothing
-    if (!ArgumentsAndSettings::crossMkspec().startsWith(QStringLiteral("win32-msvc"))) {
+    // Note that pkg-config is not supported on MSVC
+    if (!ArgumentsAndSettings::crossMkspec().contains(QStringLiteral("msvc"))) {
         QDir pcDir(ArgumentsAndSettings::qtDir());
         if (!pcDir.cd(QStringLiteral("lib")))
             return QStringList();
