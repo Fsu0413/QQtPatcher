@@ -5,6 +5,12 @@ I've been inspired by Yuri V. Krogloff from the QtBinPatcher.
 But this work is hard to fit my need which is to handle cross builds of Qt.  
 Since then, I started reinvented the wheel, in order to fit my need.
 
+## For Users of Qt 5.14 or later
+Qt 5.14 introduced a feature that Qt can be compiled to relocatable binaries.  
+According to their changelog this feature is enabled by default.  
+So QQtPatcher will not support Qt 5.14 or later.  
+Please use "-feature-relocatable" for configure to build your Qt library.
+
 ## Building
 You'll need a STATIC BUILD OF Qt5(after 5.6) and a recent compiler which supports C++11 in order to build QQtPatcher.  
 Only Qt5Core is needed.  
@@ -19,4 +25,3 @@ For versions compiled using a dynamic/shared build of Qt, you should deploy the 
 ## Using
 Just run the executable then the Qt binaries and the text files will got patched to fit the current directory the executable lies in.  
 A few arguments are available, and can be viewed using "QQtPatcher --help".
-
