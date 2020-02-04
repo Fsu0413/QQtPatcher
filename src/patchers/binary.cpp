@@ -307,6 +307,8 @@ QStringList BinaryPatcher::collectBinaryFilesForQt4Mac() const
 
 void BinaryPatcher::changeBinaryPathsForQt4Mac(const QString &file) const
 {
+    // TODO: add judgement to waitForFinished
+    // Since there will be no more builds of Qt 4 from me, I might not fix this
     QProcess otool;
     otool.start(QStringLiteral("otool"), {QStringLiteral("-L"), file});
     otool.waitForFinished();

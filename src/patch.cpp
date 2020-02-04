@@ -234,54 +234,58 @@ bool shouldForce()
 
 void warnAboutUnsupportedQtVersion()
 {
-    static const QString supportHint(QStringLiteral("You are going to patch Qt%1, which is %2. Patching may silently fail.\nOur program is supposed to be compatible with at least "
-                                                    "host builds/cross builds for Android of Qt5 after 5.6 and host builds of Qt4.8"));
+    static const QString supportHint(QStringLiteral("You are going to patch Qt%1, which %2. Patching may silently fail.\nOur program is supposed to be compatible with at least "
+                                                    "host builds/cross builds for Android of Qt5 between 5.6 and 5.13, inclusive, and host builds of Qt4.8"));
 
 #define SUPPORTHINT QString(supportHint)
 
     QVersionNumber n = ArgumentsAndSettings::qtQVersion();
 
     if (n.majorVersion() >= 6) {
-        QBPLOGW(SUPPORTHINT.arg(ArgumentsAndSettings::qtVersion()).arg(QStringLiteral("not released by the time of writing")));
+        QBPLOGW(SUPPORTHINT.arg(ArgumentsAndSettings::qtVersion()).arg(QStringLiteral("is not released by the time of writing")));
     } else if (n.majorVersion() == 5) {
         if (n.minorVersion() < 6) {
-            QBPLOGW(SUPPORTHINT.arg(ArgumentsAndSettings::qtVersion()).arg(QStringLiteral("not and won't be supported")));
-        } else if ((ArgumentsAndSettings::crossMkspec() != ArgumentsAndSettings::hostMkspec())) {
-            // clang-format off
-            static const QStringList supportedCrossMkspec {
-                QStringLiteral("android-"),
-                QStringLiteral("wasm-")
-            };
-            // clang-format on
-            bool flag = false;
-            foreach (const QString &sup, supportedCrossMkspec) {
-                if (ArgumentsAndSettings::crossMkspec().startsWith(sup)) {
-                    flag = true;
-                    break;
+            QBPLOGW(SUPPORTHINT.arg(ArgumentsAndSettings::qtVersion()).arg(QStringLiteral("is not and won't be supported")));
+        } else if (n.minorVersion() >= 14) {
+            QBPLOGW(SUPPORTHINT.arg(ArgumentsAndSettings::qtVersion()).arg(QStringLiteral("defaults to be built relocatable, thus is not and won't be supported")));
+        } else {
+            if ((ArgumentsAndSettings::crossMkspec() != ArgumentsAndSettings::hostMkspec())) {
+                // clang-format off
+                static const QStringList supportedCrossMkspec {
+                    QStringLiteral("android-"),
+                    QStringLiteral("wasm-"),
+                };
+                // clang-format on
+                bool flag = false;
+                foreach (const QString &sup, supportedCrossMkspec) {
+                    if (ArgumentsAndSettings::crossMkspec().startsWith(sup)) {
+                        flag = true;
+                        break;
+                    }
                 }
-            }
-            if (!flag) {
-                QString version = QString(QStringLiteral("%1(with -xplatform %2")).arg(ArgumentsAndSettings::qtVersion()).arg(ArgumentsAndSettings::crossMkspec());
-                QBPLOGW(SUPPORTHINT.arg(version).arg(QStringLiteral("TODO by now")));
+                if (!flag) {
+                    QString version = QString(QStringLiteral("%1(with -xplatform %2")).arg(ArgumentsAndSettings::qtVersion()).arg(ArgumentsAndSettings::crossMkspec());
+                    QBPLOGW(SUPPORTHINT.arg(version).arg(QStringLiteral("is TODO by now")));
+                } else {
+                    // supported
+                }
             } else {
                 // supported
             }
-        } else {
-            // supported
         }
     } else if (n.majorVersion() == 4) {
         if (n.minorVersion() != 8) {
-            QBPLOGW(SUPPORTHINT.arg(ArgumentsAndSettings::qtVersion()).arg(QStringLiteral("not and won't be supported")));
+            QBPLOGW(SUPPORTHINT.arg(ArgumentsAndSettings::qtVersion()).arg(QStringLiteral("is not and won't be supported")));
         } else if (ArgumentsAndSettings::crossMkspec() != ArgumentsAndSettings::hostMkspec()) {
             QString version = QString(QStringLiteral("%1 cross builds")).arg(ArgumentsAndSettings::qtVersion());
-            QBPLOGW(SUPPORTHINT.arg(version).arg(QStringLiteral("not and won't be supported")));
+            QBPLOGW(SUPPORTHINT.arg(version).arg(QStringLiteral("is not and won't be supported")));
         } else if (!ArgumentsAndSettings::crossMkspec().startsWith(QStringLiteral("win32-")) && !ArgumentsAndSettings::crossMkspec().startsWith(QStringLiteral("macx-"))) {
-            QBPLOGW(SUPPORTHINT.arg(ArgumentsAndSettings::qtVersion()).arg(QStringLiteral("TODO by now")));
+            QBPLOGW(SUPPORTHINT.arg(ArgumentsAndSettings::qtVersion()).arg(QStringLiteral("is TODO by now")));
         } else {
             // supported
         }
     } else if (n.majorVersion() < 4) {
-        QBPLOGW(SUPPORTHINT.arg(ArgumentsAndSettings::qtVersion()).arg(QStringLiteral("not and won't be supported")));
+        QBPLOGW(SUPPORTHINT.arg(ArgumentsAndSettings::qtVersion()).arg(QStringLiteral("is not and won't be supported")));
     } else {
         // impossible?
     }

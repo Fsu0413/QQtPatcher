@@ -26,7 +26,7 @@ LaPatcher::~LaPatcher()
 
 QStringList LaPatcher::findFileToPatch() const
 {
-    // MinGW don't support libtool
+    // libtool is not supported on Windows platforms, including MSVC and MinGW
 
     if (!ArgumentsAndSettings::crossMkspec().startsWith(QStringLiteral("win"))) {
         QDir libDir(ArgumentsAndSettings::qtDir());
