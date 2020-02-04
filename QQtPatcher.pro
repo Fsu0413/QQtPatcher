@@ -1,5 +1,13 @@
 QT -= gui
 
+!equals(QT_MAJOR_VERSION, "5") {
+    error("QQtPatcher requires Qt 5 after 5.6.")
+}
+
+lessThan(QT_MINOR_VERSION, 6) {
+    error("QQtPatcher requires Qt 5 after 5.6.")
+}
+
 CONFIG += c++11 console
 CONFIG -= app_bundle
 TARGET = QQtPatcher
