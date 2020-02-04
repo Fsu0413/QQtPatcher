@@ -18,6 +18,8 @@ win32 {
     RC_ICONS = res/QQtPatcher.ico
     QMAKE_TARGET_PRODUCT = "QQtPatcher"
     QMAKE_TARGET_DESCRIPTION = "Tool for patching paths in compiled Qt library"
+    QMAKE_TARGET_COMPANY = "Mogara.org"
+    QMAKE_TARGET_COPYRIGHT = "Frank Su, 2019-2020. http://mogara.org"
 }
 
 

@@ -11,7 +11,7 @@ struct BackupPrivate
     QDir qtDir;
     QDir backupDir;
     bool tempBackup;
-    QStringList filesBackuped;
+    QStringList filesMadeBackup;
 
     BackupPrivate()
         : tempBackup(false)
@@ -53,24 +53,24 @@ bool Backup::backupOneFile(const QString &pathRelativeToQtDir_)
         return false;
     }
 
-    QBPLOGV(QString(QStringLiteral("backuping file %1")).arg(pathRelativeToQtDir));
+    QBPLOGV(QString(QStringLiteral("making backup for file %1")).arg(pathRelativeToQtDir));
 
     QFileInfo fileToBackup(d->qtDir, pathRelativeToQtDir);
     QString relativeDir = d->qtDir.relativeFilePath(fileToBackup.absolutePath());
     d->backupDir.mkpath(relativeDir);
     QFile::copy(d->qtDir.absoluteFilePath(pathRelativeToQtDir), d->backupDir.absoluteFilePath(pathRelativeToQtDir));
 
-    d->filesBackuped << pathRelativeToQtDir;
+    d->filesMadeBackup << pathRelativeToQtDir;
     return true;
 }
 
 bool Backup::restoreAll()
 {
-    foreach (const QString &file, d->filesBackuped) {
+    foreach (const QString &file, d->filesMadeBackup) {
         QBPLOGV(QString(QStringLiteral("restoring backup file %1")).arg(file));
         QFile::copy(d->backupDir.absoluteFilePath(file), d->qtDir.absoluteFilePath(file));
     }
-    d->filesBackuped.clear();
+    d->filesMadeBackup.clear();
 
     return true;
 }
@@ -79,5 +79,5 @@ void Backup::destroy()
 {
     QBPLOGV(QString(QStringLiteral("deleting backup dir %1")).arg(d->backupDir.absolutePath()));
     d->backupDir.removeRecursively();
-    d->filesBackuped.clear();
+    d->filesMadeBackup.clear();
 }
