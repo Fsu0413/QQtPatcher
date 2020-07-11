@@ -71,7 +71,11 @@ bool LaPatcher::patchFile(const QString &file) const
             if (str.startsWith(QStringLiteral("dependency_libs="))) {
                 str = str.mid(17);
                 str.chop(1);
+#if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
                 QStringList l = str.split(QStringLiteral(" "), QString::SkipEmptyParts);
+#else
+                QStringList l = str.split(QStringLiteral(" "), Qt::SkipEmptyParts);
+#endif
                 QStringList r;
                 foreach (const QString &m, l) {
                     QString n = m;
@@ -140,7 +144,11 @@ bool LaPatcher::shouldPatch(const QString &file) const
             if (str.startsWith(QStringLiteral("dependency_libs="))) {
                 str = str.mid(17);
                 str.chop(1);
+#if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
                 QStringList l = str.split(QStringLiteral(" "), QString::SkipEmptyParts);
+#else
+                QStringList l = str.split(QStringLiteral(" "), Qt::SkipEmptyParts);
+#endif
                 foreach (const QString &m, l) {
                     QString n = m;
                     if (n.startsWith(QStringLiteral("-L="))) {

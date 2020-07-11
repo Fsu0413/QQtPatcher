@@ -317,7 +317,11 @@ void BinaryPatcher::changeBinaryPathsForQt4Mac(const QString &file) const
     QBPLOGV(QStringLiteral("otool output:"));
     QBPLOGV(output);
 
+#if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
     QStringList outputLines = output.split(QStringLiteral("\n"), QString::SkipEmptyParts);
+#else
+    QStringList outputLines = output.split(QStringLiteral("\n"), Qt::SkipEmptyParts);
+#endif
     outputLines.removeFirst();
 
     QDir libDir(ArgumentsAndSettings::oldDir() + QStringLiteral("/lib"));

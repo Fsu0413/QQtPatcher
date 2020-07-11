@@ -53,7 +53,11 @@ QStringList PrlPatcher::findFileToPatch() const
 QString PrlPatcher::patchQmakePrlLibs(const QDir &oldLibDir, const QDir &newLibDir, const QString &value) const
 {
     QStringList r;
+#if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
     QStringList splited = value.split(QStringLiteral(" "), QString::SkipEmptyParts);
+#else
+    QStringList splited = value.split(QStringLiteral(" "), Qt::SkipEmptyParts);
+#endif
 
     static QDir buildLibDir(ArgumentsAndSettings::buildDir() + QStringLiteral("/lib"));
 
@@ -182,7 +186,11 @@ bool PrlPatcher::shouldPatch(const QString &file) const
                 QString key = l.left(equalMark).trimmed();
                 QString value = l.mid(equalMark + 1).trimmed();
                 if (key == QStringLiteral("QMAKE_PRL_LIBS")) {
+#if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
                     QStringList l = value.split(QStringLiteral(" "), QString::SkipEmptyParts);
+#else
+                    QStringList l = value.split(QStringLiteral(" "), Qt::SkipEmptyParts);
+#endif
                     foreach (const QString &m, l) {
                         QString n = m;
                         if (n.startsWith(QStringLiteral("-L="))) {

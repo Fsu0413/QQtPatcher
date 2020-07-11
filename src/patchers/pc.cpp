@@ -165,7 +165,11 @@ void PcPatcher::patchQt4MinGW(const QString &_str, char *arr, const QDir &newDir
         strcpy(arr, str.toUtf8().constData());
     } else if (str.startsWith(QStringLiteral("Cflags:"))) {
         str = str.mid(7);
+#if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
         QStringList l = str.split(QStringLiteral(" "), QString::SkipEmptyParts);
+#else
+        QStringList l = str.split(QStringLiteral(" "), Qt::SkipEmptyParts);
+#endif
         QStringList r;
         foreach (const QString &m, l) {
             QString n = m;
@@ -205,7 +209,11 @@ void PcPatcher::patchQt4Unix(const QString &_str, char *arr, const QDir &newDir,
         strcpy(arr, "lrelease_location=${prefix}/bin/lrelease\n");
     else if (str.startsWith(QStringLiteral("Libs.private:"))) {
         str = str.mid(13);
+#if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
         QStringList l = str.split(QStringLiteral(" "), QString::SkipEmptyParts);
+#else
+        QStringList l = str.split(QStringLiteral(" "), Qt::SkipEmptyParts);
+#endif
         QStringList r;
         foreach (const QString &m, l) {
             QString n = m;
@@ -227,7 +235,11 @@ void PcPatcher::patchQt4Unix(const QString &_str, char *arr, const QDir &newDir,
         strcpy(arr, str.toUtf8().constData());
     } else if (str.startsWith(QStringLiteral("Cflags:"))) {
         str = str.mid(7);
+#if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
         QStringList l = str.split(QStringLiteral(" "), QString::SkipEmptyParts);
+#else
+        QStringList l = str.split(QStringLiteral(" "), Qt::SkipEmptyParts);
+#endif
         QStringList r;
         foreach (const QString &m, l) {
             QString n = m;

@@ -101,7 +101,7 @@ void step2(const QString &qmakeProgram)
     process.setProgram(qtDir.absoluteFilePath(qmakeProgram));
     process.setWorkingDirectory(qtDir.absoluteFilePath(QStringLiteral("bin")));
     process.setArguments({QStringLiteral("-query")});
-    process.setReadChannelMode(QProcess::ForwardedErrorChannel);
+    process.setProcessChannelMode(QProcess::ForwardedErrorChannel);
     process.setReadChannel(QProcess::StandardOutput);
     process.start(QIODevice::ReadOnly | QIODevice::Text);
     if (!process.waitForFinished()) {
