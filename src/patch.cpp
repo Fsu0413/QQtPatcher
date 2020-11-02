@@ -192,12 +192,14 @@ bool step4()
     foreach (Patcher *patcher, patcherFileMap.keys()) {
         QStringList l = patcherFileMap.value(patcher);
         foreach (const QString &file, l) {
-            backup.backupOneFile(file);
-            fail = !patcher->patchFile(file);
+            if (!ArgumentsAndSettings::dryRun()) {
+                backup.backupOneFile(file);
+                fail = !patcher->patchFile(file);
+            }
             QbpLog::instance().print(QString(QStringLiteral("Step4:patched %1 using Patcher %2, result: %3"))
                                          .arg(file)
                                          .arg(QString::fromUtf8(patcher->metaObject()->className()))
-                                         .arg(fail ? QStringLiteral("failed") : QStringLiteral("success")),
+                                         .arg(ArgumentsAndSettings::dryRun() ? QStringLiteral("dry-run") : (fail ? QStringLiteral("failed") : QStringLiteral("success"))),
                                      fail ? QbpLog::Error : QbpLog::Verbose);
 
             if (fail)
