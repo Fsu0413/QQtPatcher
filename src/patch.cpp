@@ -71,9 +71,9 @@ QString step1()
     ArgumentsAndSettings::setQtDir(qtDir.absolutePath());
     ArgumentsAndSettings::setNewDir(newDir.absolutePath());
 
-    QBPLOGV(QString(QStringLiteral("Step1:"
-                                   "Found qmake Program: %1,"
-                                   "Found QtDir: %2,"
+    QBPLOGV(QString(QStringLiteral("Step1: "
+                                   "Found qmake Program: %1, "
+                                   "Found QtDir: %2, "
                                    "New Dir: %3"))
                 .arg(qmakeProgram)
                 .arg(ArgumentsAndSettings::qtDir())
@@ -150,10 +150,10 @@ void step2(const QString &qmakeProgram)
     if (qtConfExists)
         qtDir.rename(QStringLiteral("bin/QQBP_qt.conf_QQBP"), QStringLiteral("bin/qt.conf"));
 
-    QBPLOGV(QString(QStringLiteral("Step2:"
-                                   "hostMkspec: %1,"
-                                   "crossMkspec: %2,"
-                                   "qtVersion: %3,"
+    QBPLOGV(QString(QStringLiteral("Step2: "
+                                   "hostMkspec: %1, "
+                                   "crossMkspec: %2, "
+                                   "qtVersion: %3, "
                                    "oldDir: %4"))
                 .arg(ArgumentsAndSettings::hostMkspec())
                 .arg(ArgumentsAndSettings::crossMkspec())
@@ -175,10 +175,10 @@ void step3()
         QStringList l = patcher->findFileToPatch();
 
         if (!l.isEmpty()) {
-            QBPLOGV(QString(QStringLiteral("Step3:File found by Patcher %1:\n%2")).arg(QString::fromUtf8(patcher->metaObject()->className())).arg(l.join(QStringLiteral("\n"))));
+            QBPLOGV(QString(QStringLiteral("Step3: File found by Patcher %1:\n%2")).arg(QString::fromUtf8(patcher->metaObject()->className())).arg(l.join(QStringLiteral("\n"))));
             patcherFileMap[patcher] = l;
         } else {
-            QBPLOGV(QString(QStringLiteral("Step3:No file found by Patcher %1:\n%2")).arg(QString::fromUtf8(patcher->metaObject()->className())));
+            QBPLOGV(QString(QStringLiteral("Step3: No file found by Patcher %1")).arg(QString::fromUtf8(patcher->metaObject()->className())));
             delete patcher;
         }
     }
