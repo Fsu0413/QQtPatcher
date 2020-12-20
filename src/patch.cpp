@@ -239,18 +239,19 @@ void warnAboutUnsupportedQtVersion()
 {
     static const QString supportHint(QStringLiteral("You are going to patch Qt%1, which %2. Patching may silently fail.\nOur program is supposed to be compatible with at least "
                                                     "host builds/cross builds for Android of Qt5 between 5.6 and 5.13, inclusive, and host builds of Qt4.8"));
+    static const QString supportHintF(QStringLiteral("You are going to patch Qt%1, which %2. This program will exit.\nOur program is supposed to be compatible with at least "
+                                                     "host builds/cross builds for Android of Qt5 between 5.6 and 5.13, inclusive, and host builds of Qt4.8"));
 
 #define SUPPORTHINT QString(supportHint)
+#define SUPPORTHINTF QString(supportHintF)
 
     QVersionNumber n = ArgumentsAndSettings::qtQVersion();
 
-    if (n.majorVersion() >= 6) {
-        QBPLOGW(SUPPORTHINT.arg(ArgumentsAndSettings::qtVersion()).arg(QStringLiteral("is not released by the time of writing")));
-    } else if (n.majorVersion() == 5) {
+    if (n.majorVersion() == 5) {
         if (n.minorVersion() < 6) {
-            QBPLOGW(SUPPORTHINT.arg(ArgumentsAndSettings::qtVersion()).arg(QStringLiteral("is not and won't be supported")));
+            QBPLOGF(SUPPORTHINTF.arg(ArgumentsAndSettings::qtVersion()).arg(QStringLiteral("is not and won't be supported")));
         } else if (n.minorVersion() >= 14) {
-            QBPLOGW(SUPPORTHINT.arg(ArgumentsAndSettings::qtVersion()).arg(QStringLiteral("defaults to be built relocatable, thus is not and won't be supported")));
+            QBPLOGW(SUPPORTHINT.arg(ArgumentsAndSettings::qtVersion()).arg(QStringLiteral("defaults to be built relocatable")));
         } else {
             if ((ArgumentsAndSettings::crossMkspec() != ArgumentsAndSettings::hostMkspec())) {
                 // clang-format off
@@ -279,20 +280,17 @@ void warnAboutUnsupportedQtVersion()
         }
     } else if (n.majorVersion() == 4) {
         if (n.minorVersion() != 8) {
-            QBPLOGW(SUPPORTHINT.arg(ArgumentsAndSettings::qtVersion()).arg(QStringLiteral("is not and won't be supported")));
+            QBPLOGF(SUPPORTHINTF.arg(ArgumentsAndSettings::qtVersion()).arg(QStringLiteral("is not and won't be supported")));
         } else if (ArgumentsAndSettings::crossMkspec() != ArgumentsAndSettings::hostMkspec()) {
             QString version = QString(QStringLiteral("%1 cross builds")).arg(ArgumentsAndSettings::qtVersion());
-            QBPLOGW(SUPPORTHINT.arg(version).arg(QStringLiteral("is not and won't be supported")));
+            QBPLOGF(SUPPORTHINTF.arg(version).arg(QStringLiteral("is not and won't be supported")));
         } else if (!ArgumentsAndSettings::crossMkspec().startsWith(QStringLiteral("win32-")) && !ArgumentsAndSettings::crossMkspec().startsWith(QStringLiteral("macx-"))) {
             QBPLOGW(SUPPORTHINT.arg(ArgumentsAndSettings::qtVersion()).arg(QStringLiteral("is TODO by now")));
         } else {
             // supported
         }
-    } else if (n.majorVersion() < 4) {
-        QBPLOGW(SUPPORTHINT.arg(ArgumentsAndSettings::qtVersion()).arg(QStringLiteral("is not and won't be supported")));
-    } else {
-        // impossible?
-    }
+    } else // if ((n.majorVersion() < 4) || (n.majorVersion() >= 6))
+        QBPLOGF(SUPPORTHINTF.arg(ArgumentsAndSettings::qtVersion()).arg(QStringLiteral("is not and won't be supported")));
 }
 
 bool exitWhenSpacesExist()
