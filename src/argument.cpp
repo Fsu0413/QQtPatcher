@@ -53,23 +53,23 @@ bool ArgumentsAndSettings::parse()
 
     QCommandLineParser parser;
     parser.setSingleDashWordOptionMode(QCommandLineParser::ParseAsLongOptions);
-    parser.setApplicationDescription(QString(QStringLiteral("Tool for patching paths in compiled Qt library.\n"
+    parser.setApplicationDescription(QString(QStringLiteral("Tool for patching paths in installed Qt library.\n"
                                                             "This is a reworked version of original QtBinPatcher.\n"
-                                                            "Compiled using a %1 Qt " QT_VERSION_STR ".\n"
+                                                            "Built using a %1 Qt " QT_VERSION_STR ".\n"
                                                             "Frank Su, 2019-2020. http://mogara.org\n\n"
                                                             "Thanks for Yuri V. Krugloff at http://www.tver-soft.org."))
 #ifdef QT_STATIC
-                                         .arg(QStringLiteral("staticly compiled")));
+                                         .arg(QStringLiteral("staticly built")));
 #else
-                                         .arg(QStringLiteral("**DYNAMIC COMPILED**")));
+                                         .arg(QStringLiteral("**DYNAMIC/SHARED BUILT**")));
 #endif
 
     parser.addVersionOption();
     parser.addHelpOption();
     parser.addOption(QCommandLineOption({QStringLiteral("V"), QStringLiteral("verbose")}, QStringLiteral("Print extended runtime information.")));
     parser.addOption(QCommandLineOption({QStringLiteral("b"), QStringLiteral("backup")},
-                                        QStringLiteral("If specified, the backup files made during patching will be saved to the specified "
-                                                       "path. If not, the backup files made during patching will be deleted if succeeded.\n"
+                                        QStringLiteral("If specified, the backup files made during patching will be saved to the specified path."
+                                                       " If not, the backup files made during patching will be deleted if succeeded.\n"
                                                        "Note: the backup files will be restored if an error occurs."),
                                         QStringLiteral("path")));
     parser.addOption(
@@ -77,13 +77,13 @@ bool ArgumentsAndSettings::parse()
     parser.addOption(QCommandLineOption({QStringLiteral("f"), QStringLiteral("force")}, QStringLiteral("Force patching (without old path actuality checking).")));
     parser.addOption(QCommandLineOption({QStringLiteral("q"), QStringLiteral("qt-dir")},
                                         QStringLiteral("Directory, where Qt or qmake is now located (may be relative).\n"
-                                                       "If not specified, will use current directory. Patcher will search qmake first in directory \"path\", and then in its "
-                                                       "subdir \"bin\". Patcher is NEVER looking qmake in other directories.\n"
+                                                       "If not specified, current directory will be used. Patcher will search qmake first in directory \"path\", "
+                                                       "and then in its subdir \"bin\". Patcher is NEVER looking qmake in other directories.\n"
                                                        "WARNING: If nonstandard directory for binary files is used (not \"bin\"), select directory where located qmake."),
                                         QStringLiteral("path")));
     parser.addOption(QCommandLineOption({QStringLiteral("n"), QStringLiteral("new-dir")},
                                         QStringLiteral("Directory where Qt will be located (may be relative).\n"
-                                                       "If not specified, will be used the current location."),
+                                                       "If not specified, current location will be used."),
                                         QStringLiteral("path")));
     parser.addOption(QCommandLineOption({QStringLiteral("d"), QStringLiteral("dry-run")}, QStringLiteral("Output the procedure only, do not really process the jobs.")));
 
