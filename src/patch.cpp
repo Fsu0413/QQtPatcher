@@ -161,7 +161,7 @@ void step2(const QString &qmakeProgram)
                 .arg(ArgumentsAndSettings::oldDir()));
 
     if (ArgumentsAndSettings::oldDir().contains(QRegExp(QStringLiteral("\\s"))))
-        QBPLOGF(QString(QStringLiteral("OldDir with spaces ae not supported. (%1)")).arg(ArgumentsAndSettings::oldDir()));
+        QBPLOGF(QString(QStringLiteral("OldDir with spaces is not supported. (%1)")).arg(ArgumentsAndSettings::oldDir()));
 }
 
 // step3: generate patchers
