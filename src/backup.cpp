@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: Unlicense
+
 #include "backup.h"
 #include "argument.h"
 #include "log.h"

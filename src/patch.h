@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: Unlicense
+
 #ifndef QQBPPATCH_H
 #define QQBPPATCH_H
 

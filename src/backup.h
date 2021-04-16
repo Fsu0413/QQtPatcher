@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: Unlicense
+
 #ifndef QQBPBACKUP_H
 #define QQBPBACKUP_H
 

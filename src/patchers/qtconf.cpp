@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: Unlicense
+
 #include "argument.h"
 #include "patch.h"
 #include <QDir>

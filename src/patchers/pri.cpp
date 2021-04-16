@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: Unlicense
+
 #include "argument.h"
 #include "log.h"
 #include "patch.h"

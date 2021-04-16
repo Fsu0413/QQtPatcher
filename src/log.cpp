@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: Unlicense
+
 #include "log.h"
 #include <QDebug>
 #include <QFile>

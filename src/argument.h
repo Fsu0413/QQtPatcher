@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: Unlicense
+
 #ifndef QQBPARGUMENT_H
 #define QQBPARGUMENT_H
 

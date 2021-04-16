@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: Unlicense
+
 #ifndef QQBPLOG_H
 #define QQBPLOG_H
 

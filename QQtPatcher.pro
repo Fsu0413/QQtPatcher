@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Unlicense
+
 QT -= gui
 
 !equals(QT_MAJOR_VERSION, "5") {
