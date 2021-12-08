@@ -205,8 +205,8 @@ PriPatcherWin32::~PriPatcherWin32()
 {
 }
 
-bool PriPatcherWin32::shouldPatch(const QString &file) const
-{ // win32-msvc and win32-g++ use different grammar. MSVC does not use -l
+bool PriPatcherWin32::shouldPatch(const QString &file) const // win32-msvc and win32-g++ use different grammar. MSVC does not use -l
+{
     if (file.contains(QStringLiteral("qt_lib_network_private"))) {
         QFile f(QDir(ArgumentsAndSettings::qtDir()).absoluteFilePath(file));
         if (f.exists() && f.open(QIODevice::ReadOnly | QIODevice::Text)) {

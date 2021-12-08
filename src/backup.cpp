@@ -49,7 +49,7 @@ Backup::~Backup()
 bool Backup::backupOneFile(const QString &pathRelativeToQtDir_)
 {
     QString pathRelativeToQtDir = QDir::cleanPath(pathRelativeToQtDir_);
-    // detect possibly errornous backup operation?
+    // detect possibly erroneous backup operation?
     if (pathRelativeToQtDir.contains(QStringLiteral(".."))) {
         QBPLOGE(QString(QStringLiteral("backupOneFile: path %1 contains \"..\", will not backup.")).arg(pathRelativeToQtDir_));
         return false;

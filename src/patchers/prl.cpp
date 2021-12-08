@@ -243,7 +243,7 @@ bool PrlPatcher::shouldPatch(const QString &file) const
                             if (!qt4NoBuildDirWarn) {
                                 qt4NoBuildDirWarn = true;
                                 QBPLOGW(QStringLiteral(
-                                    "Your build of Qt seems just compiled, due to bug in Qt compile system, you should provide a config file which provides a build-dir."));
+                                    "Your build of Qt seems just built, due to bug in Qt build system, you should provide a config file which provides a build-dir."));
                             }
                         }
                     }

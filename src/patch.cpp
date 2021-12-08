@@ -253,7 +253,7 @@ void warnAboutUnsupportedQtVersion()
         if (n.minorVersion() < 6) {
             QBPLOGF(SUPPORTHINTF.arg(ArgumentsAndSettings::qtVersion()).arg(QStringLiteral("is not and won't be supported")));
         } else if (n.minorVersion() >= 14) {
-            QBPLOGW(SUPPORTHINT.arg(ArgumentsAndSettings::qtVersion()).arg(QStringLiteral("defaults to be built relocatable")));
+            QBPLOGW(SUPPORTHINT.arg(ArgumentsAndSettings::qtVersion()).arg(QStringLiteral("is built relocatable by default")));
         } else {
             if ((ArgumentsAndSettings::crossMkspec() != ArgumentsAndSettings::hostMkspec())) {
                 // clang-format off
