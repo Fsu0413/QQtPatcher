@@ -58,7 +58,7 @@ bool ArgumentsAndSettings::parse()
     parser.setApplicationDescription(QString(QStringLiteral("Tool for patching paths in installed Qt library.\n"
                                                             "This is a reworked version of original QtBinPatcher.\n"
                                                             "Built using a %1 Qt " QT_VERSION_STR ".\n"
-                                                            "Frank Su, 2019-2020. http://mogara.org\n\n"
+                                                            "Frank Su, 2019-2021. http://build-qt.fsu0413.me\n\n"
                                                             "Thanks for Yuri V. Krugloff at http://www.tver-soft.org."))
 #ifdef QT_STATIC
                                          .arg(QStringLiteral("staticly built")));
