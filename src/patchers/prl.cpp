@@ -3,7 +3,9 @@
 #include "argument.h"
 #include "log.h"
 #include "patch.h"
+
 #include <QDir>
+#include <QRegularExpression>
 
 class PrlPatcher : public Patcher
 {
@@ -19,6 +21,8 @@ public:
     QString patchQmakePrlLibs(const QDir &oldLibDir, const QDir &newLibDir, const QString &value) const;
 
     bool shouldPatch(const QString &file) const;
+
+    QString win32AddPrefixSuffix(const QString &libName) const;
 
 private:
     mutable bool qt4NoBuildDirWarn;
@@ -56,14 +60,35 @@ QString PrlPatcher::patchQmakePrlLibs(const QDir &oldLibDir, const QDir &newLibD
 {
     QStringList r;
 #if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
-    QStringList splited = value.split(QStringLiteral(" "), QString::SkipEmptyParts);
+    QStringList _splitted = value.split(QStringLiteral(" "), QString::KeepEmptyParts);
 #else
-    QStringList splited = value.split(QStringLiteral(" "), Qt::SkipEmptyParts);
+    QStringList _splitted = value.split(QStringLiteral(" "), Qt::KeepEmptyParts);
 #endif
+
+    QStringList splitted;
+    QString temp;
+    bool flag = false;
+    foreach (const QString &_split, _splitted) {
+        if (!flag) {
+            if (!_split.startsWith(QLatin1Char('"')))
+                splitted << _split;
+            else {
+                flag = true;
+                temp = _split.mid(1);
+            }
+        } else {
+            temp.append(QLatin1Char(' ')).append(_split);
+            if (_split.endsWith(QLatin1Char('"'))) {
+                flag = false;
+                splitted << temp.left(temp.length() - 1);
+                temp = QString();
+            }
+        }
+    }
 
     static QDir buildLibDir(ArgumentsAndSettings::buildDir() + QStringLiteral("/lib"));
 
-    foreach (const QString &m, splited) {
+    foreach (const QString &m, splitted) {
         QString n = m;
         if (n.startsWith(QStringLiteral("-L="))) {
             if (QDir(n.mid(3).replace(QStringLiteral("\\\\"), QStringLiteral("\\"))) == oldLibDir)
@@ -86,12 +111,56 @@ QString PrlPatcher::patchQmakePrlLibs(const QDir &oldLibDir, const QDir &newLibD
         } else if (!n.startsWith(QStringLiteral("-l"))) {
             QFileInfo fi(QString(n).replace(QStringLiteral("\\\\"), QStringLiteral("\\")));
 
-            if (fi.isAbsolute() && QDir(fi.absolutePath()) == oldLibDir) {
-                QFileInfo fiNew(newLibDir, fi.fileName());
-                if (ArgumentsAndSettings::qtQVersion().majorVersion() == 5)
-                    n = QDir::fromNativeSeparators(fiNew.absoluteFilePath());
-                else
-                    n = QDir::toNativeSeparators(fiNew.absoluteFilePath()).replace(QStringLiteral("\\"), QStringLiteral("\\\\"));
+            if (fi.isAbsolute()) {
+                if (QDir(fi.absolutePath()) == oldLibDir) {
+                    QFileInfo fiNew(newLibDir, fi.fileName());
+                    if (ArgumentsAndSettings::qtQVersion().majorVersion() == 5)
+                        n = QDir::fromNativeSeparators(fiNew.absoluteFilePath());
+                    else
+                        n = QDir::toNativeSeparators(fiNew.absoluteFilePath()).replace(QStringLiteral("\\"), QStringLiteral("\\\\"));
+                } else {
+                    if ((ArgumentsAndSettings::qtQVersion().majorVersion() == 5 && ArgumentsAndSettings::qtQVersion().minorVersion() >= 10
+                         && ArgumentsAndSettings::qtQVersion().minorVersion() <= 13)
+                        && ArgumentsAndSettings::crossMkspec().startsWith(QStringLiteral("win32-"))) {
+                        // clang-format off
+                        static QStringList knownLists {
+                            QStringLiteral("d2d1"),
+                            QStringLiteral("d3d9"),
+                            QStringLiteral("dwrite"),
+                            QStringLiteral("dxguid"),
+                            QStringLiteral("advapi32"),
+                            QStringLiteral("comdlg32"),
+                            QStringLiteral("crypt32"),
+                            QStringLiteral("dnsapi"),
+                            QStringLiteral("dwmapi"),
+                            QStringLiteral("gdi32"),
+                            QStringLiteral("iphlpapi"),
+                            QStringLiteral("kernel32"),
+                            QStringLiteral("mpr"),
+                            QStringLiteral("netapi32"),
+                            QStringLiteral("ole32"),
+                            QStringLiteral("oleaut32"),
+                            QStringLiteral("setupapi"),
+                            QStringLiteral("shell32"),
+                            QStringLiteral("shlwapi"),
+                            QStringLiteral("user32"),
+                            QStringLiteral("userenv"),
+                            QStringLiteral("uuid"),
+                            QStringLiteral("uxtheme"),
+                            QStringLiteral("version"),
+                            QStringLiteral("winmm"),
+                            QStringLiteral("winspool"),
+                            QStringLiteral("ws2_32"),
+                        };
+                        // clang-format on
+
+                        QString baseName = QFileInfo(QString(n).replace(QStringLiteral("\\\\"), QStringLiteral("\\"))).baseName().toLower();
+                        foreach (const QString &known, knownLists) {
+                            if (baseName.contains(known))
+                                n = win32AddPrefixSuffix(known);
+                        }
+                    }
+                }
             } else {
                 if (!ArgumentsAndSettings::buildDir().isEmpty() && ArgumentsAndSettings::qtQVersion().majorVersion() == 4) {
                     if (fi.isAbsolute() && QDir(fi.absolutePath()) == buildLibDir) {
@@ -101,6 +170,9 @@ QString PrlPatcher::patchQmakePrlLibs(const QDir &oldLibDir, const QDir &newLibD
                 }
             }
         }
+        if (n.contains(QRegularExpression(QStringLiteral("\\s"))))
+            n = QStringLiteral("\"") + n + QStringLiteral("\"");
+
         r << n;
     }
     return r.join(QStringLiteral(" "));
@@ -189,11 +261,33 @@ bool PrlPatcher::shouldPatch(const QString &file) const
                 QString value = l.mid(equalMark + 1).trimmed();
                 if (key == QStringLiteral("QMAKE_PRL_LIBS")) {
 #if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
-                    QStringList l = value.split(QStringLiteral(" "), QString::SkipEmptyParts);
+                    QStringList _splitted = value.split(QStringLiteral(" "), QString::KeepEmptyParts);
 #else
-                    QStringList l = value.split(QStringLiteral(" "), Qt::SkipEmptyParts);
+                    QStringList _splitted = value.split(QStringLiteral(" "), Qt::KeepEmptyParts);
 #endif
-                    foreach (const QString &m, l) {
+
+                    QStringList splitted;
+                    QString temp;
+                    bool flag = false;
+                    foreach (const QString &_split, _splitted) {
+                        if (!flag) {
+                            if (!_split.startsWith(QLatin1Char('"')))
+                                splitted << _split;
+                            else {
+                                flag = true;
+                                temp = _split.mid(1);
+                            }
+                        } else {
+                            temp.append(QLatin1Char(' ')).append(_split);
+                            if (_split.endsWith(QLatin1Char('"'))) {
+                                flag = false;
+                                splitted << temp.left(temp.length() - 1);
+                                temp = QString();
+                            }
+                        }
+                    }
+
+                    foreach (const QString &m, splitted) {
                         QString n = m;
                         if (n.startsWith(QStringLiteral("-L="))) {
                             if (QDir(n.mid(3).replace(QStringLiteral("\\\\"), QStringLiteral("\\"))) == oldLibDir) {
@@ -206,6 +300,54 @@ bool PrlPatcher::shouldPatch(const QString &file) const
                                 return true;
                             }
                         } else if (!n.startsWith(QStringLiteral("-l"))) {
+                            // Seems Qt 5.12 needs to do such patch
+                            // Qt 5.9 does not have these stuff
+                            // I have not built Qt 5.10/5.11, so I can't confirm
+                            // All of my builds of Qt 5.13 have been removed, I can't confirm either
+                            // Qt 5.14 has this problem fixed(Since QQtPatcher won't support Qt 5.14, I will not test)
+                            if ((ArgumentsAndSettings::qtQVersion().majorVersion() == 5 && ArgumentsAndSettings::qtQVersion().minorVersion() >= 10
+                                 && ArgumentsAndSettings::qtQVersion().minorVersion() <= 13)
+                                && ArgumentsAndSettings::crossMkspec().startsWith(QStringLiteral("win32-"))) {
+                                // clang-format off
+                                static QStringList knownLists {
+                                    QStringLiteral("d2d1"),
+                                    QStringLiteral("d3d9"),
+                                    QStringLiteral("dwrite"),
+                                    QStringLiteral("dxguid"),
+                                    QStringLiteral("advapi32"),
+                                    QStringLiteral("comdlg32"),
+                                    QStringLiteral("crypt32"),
+                                    QStringLiteral("dnsapi"),
+                                    QStringLiteral("dwmapi"),
+                                    QStringLiteral("gdi32"),
+                                    QStringLiteral("iphlpapi"),
+                                    QStringLiteral("kernel32"),
+                                    QStringLiteral("mpr"),
+                                    QStringLiteral("netapi32"),
+                                    QStringLiteral("ole32"),
+                                    QStringLiteral("oleaut32"),
+                                    QStringLiteral("setupapi"),
+                                    QStringLiteral("shell32"),
+                                    QStringLiteral("shlwapi"),
+                                    QStringLiteral("user32"),
+                                    QStringLiteral("userenv"),
+                                    QStringLiteral("uuid"),
+                                    QStringLiteral("uxtheme"),
+                                    QStringLiteral("version"),
+                                    QStringLiteral("winmm"),
+                                    QStringLiteral("winspool"),
+                                    QStringLiteral("ws2_32"),
+                                };
+                                // clang-format on
+                                QString baseName = QFileInfo(QString(n).replace(QStringLiteral("\\\\"), QStringLiteral("\\"))).baseName().toLower();
+                                foreach (const QString &known, knownLists) {
+                                    if (baseName.contains(known)) {
+                                        f.close();
+                                        return true;
+                                    }
+                                }
+                            }
+
                             if (QDir(QFileInfo(QString(n).replace(QStringLiteral("\\\\"), QStringLiteral("\\"))).absolutePath()) == oldLibDir) {
                                 f.close();
                                 return true;
@@ -254,6 +396,15 @@ bool PrlPatcher::shouldPatch(const QString &file) const
     }
 
     return false;
+}
+
+QString PrlPatcher::win32AddPrefixSuffix(const QString &libName) const
+{
+    // win32-msvc and win32-g++ use different grammar. MSVC does not use -l
+    if (ArgumentsAndSettings::crossMkspec().contains(QStringLiteral("msvc")))
+        return libName + QStringLiteral(".lib");
+    else
+        return QStringLiteral("-l") + libName;
 }
 
 REGISTER_PATCHER(PrlPatcher)
