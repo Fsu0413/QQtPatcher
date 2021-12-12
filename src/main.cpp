@@ -13,8 +13,8 @@
 int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
-    a.setApplicationVersion(QStringLiteral(VERSION));
-    QDir::setCurrent(a.applicationDirPath());
+    QCoreApplication::setApplicationVersion(QStringLiteral(VERSION));
+    QDir::setCurrent(QCoreApplication::applicationDirPath());
 
     ArgumentsAndSettings::parse();
 
