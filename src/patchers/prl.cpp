@@ -15,6 +15,7 @@ public:
     Q_INVOKABLE PrlPatcher();
     ~PrlPatcher() override;
 
+    QStringList findFileToPatchInternal(const QDir &dir, bool recursive = true) const;
     QStringList findFileToPatch() const override;
     bool patchFile(const QString &file) const override;
 
@@ -37,23 +38,53 @@ PrlPatcher::~PrlPatcher()
 {
 }
 
-QStringList PrlPatcher::findFileToPatch() const
+QStringList PrlPatcher::findFileToPatchInternal(const QDir &dir, bool recursive) const
 {
-    // patch lib/*.prl, no exception.
-
-    QDir libDir(ArgumentsAndSettings::qtDir());
-    if (!libDir.cd(QStringLiteral("lib")))
-        return QStringList();
+    QDir qtDir(ArgumentsAndSettings::qtDir());
+    QDir libDir(dir);
 
     libDir.setFilter(QDir::Files | QDir::NoSymLinks | QDir::NoDotAndDotDot | QDir::Readable);
     libDir.setNameFilters({QStringLiteral("*.prl")});
     QStringList r;
     QStringList l = libDir.entryList();
     foreach (const QString &f, l) {
-        if (shouldPatch(f))
-            r << (QStringLiteral("lib/") + f);
+        if (shouldPatch(dir.absoluteFilePath(f)))
+            r << qtDir.relativeFilePath(dir.absolutePath()) + QStringLiteral("/") + f;
     }
+
+    if (recursive) {
+        libDir.setFilter(QDir::Dirs | QDir::AllDirs | QDir::NoSymLinks | QDir::NoDotAndDotDot /* | QDir::Executable */);
+        libDir.setNameFilters({});
+        QStringList l = libDir.entryList();
+        foreach (const QString &f, l) {
+            QDir subdir(libDir);
+            subdir.cd(f);
+            r.append(findFileToPatchInternal(subdir, true));
+        }
+    }
+
     return r;
+}
+
+QStringList PrlPatcher::findFileToPatch() const
+{
+    // patch **.prl
+
+    QStringList ret;
+
+    QDir libDir(ArgumentsAndSettings::qtDir());
+    if (libDir.cd(QStringLiteral("lib")))
+        ret.append(findFileToPatchInternal(libDir, false));
+
+    QDir qmlDir(ArgumentsAndSettings::qtDir());
+    if (qmlDir.cd(QStringLiteral("qml")))
+        ret.append(findFileToPatchInternal(qmlDir, true));
+
+    QDir pluginDir(ArgumentsAndSettings::qtDir());
+    if (pluginDir.cd(QStringLiteral("plugins")))
+        ret.append(findFileToPatchInternal(pluginDir, true));
+
+    return ret;
 }
 
 QString PrlPatcher::patchQmakePrlLibs(const QDir &oldLibDir, const QDir &newLibDir, const QString &value) const
@@ -124,6 +155,7 @@ QString PrlPatcher::patchQmakePrlLibs(const QDir &oldLibDir, const QDir &newLibD
                         && ArgumentsAndSettings::crossMkspec().startsWith(QStringLiteral("win32-"))) {
                         // clang-format off
                         static QStringList knownLists {
+                            // libs
                             QStringLiteral("d2d1"),
                             QStringLiteral("d3d9"),
                             QStringLiteral("dwrite"),
@@ -151,6 +183,24 @@ QString PrlPatcher::patchQmakePrlLibs(const QDir &oldLibDir, const QDir &newLibD
                             QStringLiteral("winmm"),
                             QStringLiteral("winspool"),
                             QStringLiteral("ws2_32"),
+
+                            // plugins
+                            QStringLiteral("odbc32"),
+                            QStringLiteral("strmiids"),
+                            QStringLiteral("mf"),
+                            QStringLiteral("mfplat"),
+                            QStringLiteral("dxva2"),
+                            QStringLiteral("evr"),
+                            QStringLiteral("dmoguids"),
+                            QStringLiteral("msdmo"),
+                            QStringLiteral("propsys"),
+                            QStringLiteral("imm32"),
+                            QStringLiteral("wtsapi32"),
+                            QStringLiteral("d3d11"),
+                            QStringLiteral("dxgi"),
+                            QStringLiteral("d3d12"),
+                            QStringLiteral("d3dcompiler"),
+                            QStringLiteral("dcomp"),
                         };
                         // clang-format on
 
@@ -250,7 +300,7 @@ bool PrlPatcher::shouldPatch(const QString &file) const
 
     // it is assumed that no spaces is in the olddir prefix
 
-    QFile f(libDir.absoluteFilePath(file));
+    QFile f(file);
     if (f.exists() && f.open(QIODevice::ReadOnly | QIODevice::Text)) {
         char arr[10000];
         while (f.readLine(arr, 9999) > 0) {
@@ -310,6 +360,7 @@ bool PrlPatcher::shouldPatch(const QString &file) const
                                 && ArgumentsAndSettings::crossMkspec().startsWith(QStringLiteral("win32-"))) {
                                 // clang-format off
                                 static QStringList knownLists {
+                                    // libs
                                     QStringLiteral("d2d1"),
                                     QStringLiteral("d3d9"),
                                     QStringLiteral("dwrite"),
@@ -337,6 +388,24 @@ bool PrlPatcher::shouldPatch(const QString &file) const
                                     QStringLiteral("winmm"),
                                     QStringLiteral("winspool"),
                                     QStringLiteral("ws2_32"),
+
+                                    // plugins
+                                    QStringLiteral("odbc32"),
+                                    QStringLiteral("strmiids"),
+                                    QStringLiteral("mf"),
+                                    QStringLiteral("mfplat"),
+                                    QStringLiteral("dxva2"),
+                                    QStringLiteral("evr"),
+                                    QStringLiteral("dmoguids"),
+                                    QStringLiteral("msdmo"),
+                                    QStringLiteral("propsys"),
+                                    QStringLiteral("imm32"),
+                                    QStringLiteral("wtsapi32"),
+                                    QStringLiteral("d3d11"),
+                                    QStringLiteral("dxgi"),
+                                    QStringLiteral("d3d12"),
+                                    QStringLiteral("d3dcompiler"),
+                                    QStringLiteral("dcomp"),
                                 };
                                 // clang-format on
                                 QString baseName = QFileInfo(QString(n).replace(QStringLiteral("\\\\"), QStringLiteral("\\"))).baseName().toLower();
