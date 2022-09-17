@@ -48,3 +48,8 @@ HEADERS += \
         src/patch.h
 
 INCLUDEPATH += src
+
+# workaround Qt 6 qmake which don't add following libraries during qmake
+equals(QT_MAJOR_VERSION, 6): msvc {
+	LIBS += -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32
+}
