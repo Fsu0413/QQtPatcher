@@ -7,6 +7,7 @@
 #include <QDir>
 #include <QList>
 #include <QProcess>
+#include <QRegularExpression>
 #include <QStringList>
 #include <QTextStream>
 #include <QVersionNumber>
@@ -81,7 +82,7 @@ QString step1()
                 .arg(ArgumentsAndSettings::qtDir())
                 .arg(ArgumentsAndSettings::newDir()));
 
-    if (ArgumentsAndSettings::newDir().contains(QRegExp(QStringLiteral("\\s"))))
+    if (ArgumentsAndSettings::newDir().contains(QRegularExpression(QStringLiteral("\\s"))))
         QBPLOGF(QString(QStringLiteral("NewDir with spaces ae not supported. (%1)")).arg(ArgumentsAndSettings::newDir()));
 
     return qmakeProgram;
@@ -162,7 +163,7 @@ void step2(const QString &qmakeProgram)
                 .arg(ArgumentsAndSettings::qtVersion())
                 .arg(ArgumentsAndSettings::oldDir()));
 
-    if (ArgumentsAndSettings::oldDir().contains(QRegExp(QStringLiteral("\\s"))))
+    if (ArgumentsAndSettings::oldDir().contains(QRegularExpression(QStringLiteral("\\s"))))
         QBPLOGF(QString(QStringLiteral("OldDir with spaces is not supported. (%1)")).arg(ArgumentsAndSettings::oldDir()));
 }
 
@@ -297,11 +298,11 @@ void warnAboutUnsupportedQtVersion()
 
 bool exitWhenSpacesExist()
 {
-    if (ArgumentsAndSettings::oldDir().contains(QRegExp(QStringLiteral("\\s")))) {
+    if (ArgumentsAndSettings::oldDir().contains(QRegularExpression(QStringLiteral("\\s")))) {
         QBPLOGE(QStringLiteral("Old Path of Qt contains space: ") + ArgumentsAndSettings::oldDir());
         return false;
     }
-    if (ArgumentsAndSettings::newDir().contains(QRegExp(QStringLiteral("\\s")))) {
+    if (ArgumentsAndSettings::newDir().contains(QRegularExpression(QStringLiteral("\\s")))) {
         QBPLOGE(QStringLiteral("New Path of Qt contains space: ") + ArgumentsAndSettings::newDir());
         return false;
     }
