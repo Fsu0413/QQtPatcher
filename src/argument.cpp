@@ -55,16 +55,21 @@ bool ArgumentsAndSettings::parse()
 
     QCommandLineParser parser;
     parser.setSingleDashWordOptionMode(QCommandLineParser::ParseAsLongOptions);
-    parser.setApplicationDescription(QString(QStringLiteral("Tool for patching paths in installed Qt library.\n"
+    parser.setApplicationDescription(QString(QStringLiteral("QQtPatcher %3\n"
+                                                            "\n"
+                                                            "Tool for patching paths in redestributed built Qt library.\n"
                                                             "This is a reworked version of original QtBinPatcher.\n"
-                                                            "Built using a %1 Qt " QT_VERSION_STR ".\n"
-                                                            "Frank Su, 2019-2021. http://build-qt.fsu0413.me\n\n"
+                                                            "Built using a %1 Qt %2.\n"
+                                                            "Frank Su, 2019-2023. http://build-qt.fsu0413.me\n"
+                                                            "\n"
                                                             "Thanks for Yuri V. Krugloff at http://www.tver-soft.org."))
+                                         .arg(
 #ifdef QT_STATIC
-                                         .arg(QStringLiteral("staticly built")));
+                                             QStringLiteral("staticly built"),
 #else
-                                         .arg(QStringLiteral("**DYNAMIC/SHARED BUILT**")));
+                                             QStringLiteral("**DYNAMIC/SHARED BUILT**"),
 #endif
+                                             QStringLiteral(QT_VERSION_STR), QStringLiteral(VERSION)));
 
     parser.addVersionOption();
     parser.addHelpOption();

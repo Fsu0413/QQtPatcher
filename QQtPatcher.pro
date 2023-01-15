@@ -19,9 +19,9 @@ VERSION = 0.8.2
 win32 {
     RC_ICONS = res/QQtPatcher.ico
     QMAKE_TARGET_PRODUCT = "QQtPatcher"
-    QMAKE_TARGET_DESCRIPTION = "Tool for patching paths in compiled Qt library"
+    QMAKE_TARGET_DESCRIPTION = "Tool for patching paths in redestributed built Qt library"
     # QMAKE_TARGET_COMPANY = "Mogara.org"
-    QMAKE_TARGET_COPYRIGHT = "Frank Su, 2019-2022. https://build-qt.fsu0413.me"
+    QMAKE_TARGET_COPYRIGHT = "Frank Su, 2019-2023. https://build-qt.fsu0413.me"
 }
 
 DEFINES += QT_DEPRECATED_WARNINGS QT_DISABLE_DEPRECATED_BEFORE=0x070000 VERSION=\\\"$$VERSION\\\" QT_NO_CAST_FROM_ASCII
