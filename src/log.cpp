@@ -41,7 +41,7 @@ bool QbpLog::setLogFile(const QString &fileName)
 
     if (!fileName.isEmpty()) {
         d->f.setFileName(fileName);
-        return d->f.open(QIODevice::WriteOnly | QIODevice::Truncate | QIODevice::Text);
+        return d->f.open(QIODevice::WriteOnly | QIODevice::Truncate | QIODevice::Text | QIODevice::Unbuffered);
     }
 
     return true;
@@ -75,10 +75,15 @@ void QbpLog::print(const QString &c, LogLevel l)
     }
 
     if (levelAvailable && d->f.isOpen())
-        d->f.write(QString(QStringLiteral("%1:%2\n")).arg(logLevelStr.value(static_cast<int>(l))).arg(c).toUtf8().constData());
+        d->f.write(QString(QStringLiteral("%1: %2\n")).arg(logLevelStr.value(static_cast<int>(l))).arg(c).toUtf8().constData());
 
-    if (fatalError)
+    if (fatalError) {
+        // why nothing is wrote during fatal error?
+        // Close the file before calling qFatal, since qFatal is calling exit() so any code after qFatal is unreachable.
+        d->f.close();
         qFatal("%s", c.toUtf8().constData());
+        Q_UNREACHABLE();
+    }
 }
 
 QbpLog::QbpLog()

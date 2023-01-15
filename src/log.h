@@ -31,22 +31,22 @@ private:
     QbpLogPrivate *d;
 };
 
-inline void QBPLOGV(const QString &l)
+Q_ALWAYS_INLINE void QBPLOGV(const QString &l)
 {
     QbpLog::instance().print(l, QbpLog::Verbose);
 }
 
-inline void QBPLOGW(const QString &l)
+Q_ALWAYS_INLINE void QBPLOGW(const QString &l)
 {
     QbpLog::instance().print(l, QbpLog::Warning);
 }
 
-inline void QBPLOGE(const QString &l)
+Q_ALWAYS_INLINE void QBPLOGE(const QString &l)
 {
     QbpLog::instance().print(l, QbpLog::Error);
 }
 
-inline void QBPLOGF(const QString &l)
+Q_ALWAYS_INLINE void QBPLOGF(const QString &l)
 {
     QbpLog::instance().print(l, QbpLog::Fatal);
 }
