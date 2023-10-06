@@ -14,7 +14,7 @@ CONFIG += c++11 console
 CONFIG -= app_bundle
 TARGET = QQtPatcher
 
-VERSION = 0.8.2
+VERSION = 1.0.0
 
 win32 {
     RC_ICONS = res/QQtPatcher.ico
