@@ -1,4 +1,11 @@
 
+# Stopping development
+Qt since 5.14 is relocatable so there is no need to run QQtPatcher after directory movement. It was unsupported by QQtPatcher since its release.  
+Since all of Qt before 5.14 has been EOL (and its supporting OpenSSL has also been EOL) no more development seems to be needed in this repository.
+
+I'd like to stop development of QQtPatcher forever since it is not needed anymore on further versions.  
+Please contact me if anyone want to continue developing this software. I'm glad to transfer this repository.
+
 # QQtPatcher
 This is QQtPatcher, written by Fsu0413.  
 I've been inspired by Yuri V. Krogloff from the QtBinPatcher.  
